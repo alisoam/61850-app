@@ -1,0 +1,7 @@
+r
+h
+loadbin   com.bin, 0x60000000
+verifybin com.bin, 0x60000000
+r
+g
+exit
