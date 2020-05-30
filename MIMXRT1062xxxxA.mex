@@ -24,9 +24,9 @@
             <processor_version>7.0.1</processor_version>
             <power_domains/>
             <pin_labels>
-               <pin_label pin_num="K1" pin_signal="GPIO_SD_B0_03" label="LED1" identifier="AA;LED1"/>
-               <pin_label pin_num="J4" pin_signal="GPIO_SD_B0_00" label="LED2" identifier="LED2"/>
-               <pin_label pin_num="H2" pin_signal="GPIO_SD_B0_04" label="LED3" identifier="LED3"/>
+               <pin_label pin_num="K1" pin_signal="GPIO_SD_B0_03" label="LED3" identifier="AA;LED1;LED2;LED3"/>
+               <pin_label pin_num="J4" pin_signal="GPIO_SD_B0_00" label="LED2" identifier="LED2;LED3"/>
+               <pin_label pin_num="H2" pin_signal="GPIO_SD_B0_04" label="LED1" identifier="LED3;LED1"/>
                <pin_label pin_num="B9" pin_signal="GPIO_B0_08" label="ENET2_RST" identifier="ENET2_RST"/>
             </pin_labels>
          </pins_profile>
@@ -74,41 +74,175 @@
                   <pin peripheral="ARM" signal="arm_trace_swo" pin_num="G13" pin_signal="GPIO_AD_B0_10"/>
                   <pin peripheral="GPIO3" signal="gpio_io, 16" pin_num="H2" pin_signal="GPIO_SD_B0_04">
                      <pin_features>
+                        <pin_feature name="identifier" value="LED1"/>
                         <pin_feature name="direction" value="OUTPUT"/>
                      </pin_features>
                   </pin>
                   <pin peripheral="GPIO3" signal="gpio_io, 12" pin_num="J4" pin_signal="GPIO_SD_B0_00">
                      <pin_features>
+                        <pin_feature name="identifier" value="LED2"/>
                         <pin_feature name="direction" value="OUTPUT"/>
                      </pin_features>
                   </pin>
                   <pin peripheral="GPIO3" signal="gpio_io, 15" pin_num="K1" pin_signal="GPIO_SD_B0_03">
                      <pin_features>
-                        <pin_feature name="identifier" value="LED1"/>
+                        <pin_feature name="identifier" value="LED3"/>
                         <pin_feature name="direction" value="OUTPUT"/>
                      </pin_features>
                   </pin>
-                  <pin peripheral="ENET" signal="enet_ref_clk" pin_num="B13" pin_signal="GPIO_B1_10"/>
-                  <pin peripheral="ENET" signal="enet_tx_en" pin_num="A13" pin_signal="GPIO_B1_09"/>
-                  <pin peripheral="ENET" signal="enet_tx_data, 0" pin_num="B12" pin_signal="GPIO_B1_07"/>
-                  <pin peripheral="ENET" signal="enet_tx_data, 1" pin_num="A12" pin_signal="GPIO_B1_08"/>
-                  <pin peripheral="ENET" signal="enet_rx_er" pin_num="C13" pin_signal="GPIO_B1_11"/>
-                  <pin peripheral="ENET" signal="enet_rx_data, 0" pin_num="E12" pin_signal="GPIO_B1_04"/>
-                  <pin peripheral="ENET" signal="enet_rx_data, 1" pin_num="D12" pin_signal="GPIO_B1_05"/>
-                  <pin peripheral="ENET" signal="enet_rx_en" pin_num="C12" pin_signal="GPIO_B1_06"/>
+                  <pin peripheral="ENET" signal="enet_ref_clk" pin_num="B13" pin_signal="GPIO_B1_10">
+                     <pin_features>
+                        <pin_feature name="software_input_on" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Keeper"/>
+                        <pin_feature name="pull_keeper_enable" value="Disable"/>
+                        <pin_feature name="speed" value="MHZ_50"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="ENET" signal="enet_tx_en" pin_num="A13" pin_signal="GPIO_B1_09">
+                     <pin_features>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up_100K_Ohm"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="ENET" signal="enet_tx_data, 0" pin_num="B12" pin_signal="GPIO_B1_07">
+                     <pin_features>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up_100K_Ohm"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_5"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="ENET" signal="enet_tx_data, 1" pin_num="A12" pin_signal="GPIO_B1_08">
+                     <pin_features>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up_100K_Ohm"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_5"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="ENET" signal="enet_rx_er" pin_num="C13" pin_signal="GPIO_B1_11">
+                     <pin_features>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up_100K_Ohm"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_5"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="ENET" signal="enet_rx_data, 0" pin_num="E12" pin_signal="GPIO_B1_04">
+                     <pin_features>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up_100K_Ohm"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_5"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="ENET" signal="enet_rx_data, 1" pin_num="D12" pin_signal="GPIO_B1_05">
+                     <pin_features>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up_100K_Ohm"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_5"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="ENET" signal="enet_rx_en" pin_num="C12" pin_signal="GPIO_B1_06">
+                     <pin_features>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up_100K_Ohm"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_5"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
                   <pin peripheral="ENET" signal="enet_mdio" pin_num="C7" pin_signal="GPIO_EMC_41"/>
-                  <pin peripheral="ENET" signal="enet_mdc" pin_num="A7" pin_signal="GPIO_EMC_40"/>
-                  <pin peripheral="ENET2" signal="enet_rx_data, 1" pin_num="C11" pin_signal="GPIO_B1_02"/>
-                  <pin peripheral="ENET2" signal="enet_rx_data, 0" pin_num="B11" pin_signal="GPIO_B1_01"/>
-                  <pin peripheral="ENET2" signal="enet_tx_data, 0" pin_num="C10" pin_signal="GPIO_B0_12"/>
-                  <pin peripheral="ENET2" signal="enet_tx_data, 1" pin_num="D10" pin_signal="GPIO_B0_13"/>
+                  <pin peripheral="ENET" signal="enet_mdc" pin_num="A7" pin_signal="GPIO_EMC_40">
+                     <pin_features>
+                        <pin_feature name="pull_keeper_select" value="Keeper"/>
+                        <pin_feature name="speed" value="MHZ_100"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="ENET2" signal="enet_rx_data, 1" pin_num="C11" pin_signal="GPIO_B1_02">
+                     <pin_features>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up_100K_Ohm"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_5"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="ENET2" signal="enet_rx_data, 0" pin_num="B11" pin_signal="GPIO_B1_01">
+                     <pin_features>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up_100K_Ohm"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_5"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="ENET2" signal="enet_tx_data, 0" pin_num="C10" pin_signal="GPIO_B0_12">
+                     <pin_features>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up_100K_Ohm"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_5"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="ENET2" signal="enet_tx_data, 1" pin_num="D10" pin_signal="GPIO_B0_13">
+                     <pin_features>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up_100K_Ohm"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_5"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
                   <pin peripheral="ENET2" signal="enet_mdc" pin_num="D7" pin_signal="GPIO_B0_00"/>
                   <pin peripheral="ENET2" signal="enet_mdio" pin_num="E7" pin_signal="GPIO_B0_01"/>
-                  <pin peripheral="GPIO2" signal="gpio_io, 08" pin_num="B9" pin_signal="GPIO_B0_08"/>
-                  <pin peripheral="ENET2" signal="enet_tx_en" pin_num="E10" pin_signal="GPIO_B0_14"/>
-                  <pin peripheral="ENET2" signal="enet_rx_er" pin_num="A11" pin_signal="GPIO_B1_00"/>
-                  <pin peripheral="ENET2" signal="enet_ref_clk" pin_num="E11" pin_signal="GPIO_B0_15"/>
-                  <pin peripheral="ENET2" signal="enet_rx_en" pin_num="D11" pin_signal="GPIO_B1_03"/>
+                  <pin peripheral="GPIO2" signal="gpio_io, 08" pin_num="B9" pin_signal="GPIO_B0_08">
+                     <pin_features>
+                        <pin_feature name="direction" value="OUTPUT"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="ENET2" signal="enet_tx_en" pin_num="E10" pin_signal="GPIO_B0_14">
+                     <pin_features>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up_100K_Ohm"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_5"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="ENET2" signal="enet_rx_er" pin_num="A11" pin_signal="GPIO_B1_00">
+                     <pin_features>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up_100K_Ohm"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_5"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="ENET2" signal="enet_ref_clk" pin_num="E11" pin_signal="GPIO_B0_15">
+                     <pin_features>
+                        <pin_feature name="software_input_on" value="Enable"/>
+                        <pin_feature name="pull_keeper_enable" value="Disable"/>
+                        <pin_feature name="speed" value="MHZ_50"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="ENET2" signal="enet_rx_en" pin_num="D11" pin_signal="GPIO_B1_03">
+                     <pin_features>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up_100K_Ohm"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_5"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
                </pins>
             </function>
          </functions_list>
@@ -316,30 +450,6 @@
                         </struct>
                      </config_set>
                   </instance>
-                  <instance name="USB1" uuid="22772551-174f-4be0-910f-7e0d25ae2a20" type="usb" type_id="usb_f20ee74266c7aae05b4d32d0517001b5" mode="device" peripheral="USB1" enabled="false" comment="" custom_name_enabled="false">
-                     <config_set name="deviceSetting">
-                        <setting name="vendor_id" value="0x1FC9"/>
-                        <setting name="product_id" value="0x0090"/>
-                        <setting name="manufacturer_string" value="NXP"/>
-                        <setting name="product_string" value="Product"/>
-                        <setting name="self_powered" value="false"/>
-                        <setting name="suspend_resume" value="false"/>
-                        <setting name="max_power" value="100"/>
-                        <array name="interfaces"/>
-                     </config_set>
-                  </instance>
-                  <instance name="USB2" uuid="6a2e9aa9-2a7b-4a06-b8d2-02831e3e2cad" type="usb" type_id="usb_f20ee74266c7aae05b4d32d0517001b5" mode="device" peripheral="USB2" enabled="false" comment="" custom_name_enabled="false">
-                     <config_set name="deviceSetting" quick_selection="QS_DEVICE_DEFAULT">
-                        <setting name="vendor_id" value="0x1FC9"/>
-                        <setting name="product_id" value="0x0090"/>
-                        <setting name="manufacturer_string" value="NXP"/>
-                        <setting name="product_string" value="Product"/>
-                        <setting name="self_powered" value="false"/>
-                        <setting name="suspend_resume" value="false"/>
-                        <setting name="max_power" value="100"/>
-                        <array name="interfaces"/>
-                     </config_set>
-                  </instance>
                   <instance name="TEMPMON" uuid="f37394a6-1e19-4007-a2ed-fb8f6853e460" type="tempmon" type_id="tempmon_c966e400757748d37785414258f2801c" mode="general" peripheral="TEMPMON" enabled="true" comment="" custom_name_enabled="false">
                      <config_set name="fsl_tempmon" quick_selection="QuickSelection1">
                         <struct name="tempmon_config">
@@ -427,6 +537,30 @@
                         </struct>
                      </config_set>
                   </instance>
+                  <instance name="USB1" uuid="22772551-174f-4be0-910f-7e0d25ae2a20" type="usb" type_id="usb_f20ee74266c7aae05b4d32d0517001b5" mode="device" peripheral="USB1" enabled="false" comment="" custom_name_enabled="false">
+                     <config_set name="deviceSetting">
+                        <setting name="vendor_id" value="0x1FC9"/>
+                        <setting name="product_id" value="0x0090"/>
+                        <setting name="manufacturer_string" value="NXP"/>
+                        <setting name="product_string" value="Product"/>
+                        <setting name="self_powered" value="false"/>
+                        <setting name="suspend_resume" value="false"/>
+                        <setting name="max_power" value="100"/>
+                        <array name="interfaces"/>
+                     </config_set>
+                  </instance>
+                  <instance name="USB2" uuid="6a2e9aa9-2a7b-4a06-b8d2-02831e3e2cad" type="usb" type_id="usb_f20ee74266c7aae05b4d32d0517001b5" mode="device" peripheral="USB2" enabled="false" comment="" custom_name_enabled="false">
+                     <config_set name="deviceSetting" quick_selection="QS_DEVICE_DEFAULT">
+                        <setting name="vendor_id" value="0x1FC9"/>
+                        <setting name="product_id" value="0x0090"/>
+                        <setting name="manufacturer_string" value="NXP"/>
+                        <setting name="product_string" value="Product"/>
+                        <setting name="self_powered" value="false"/>
+                        <setting name="suspend_resume" value="false"/>
+                        <setting name="max_power" value="100"/>
+                        <array name="interfaces"/>
+                     </config_set>
+                  </instance>
                </instances>
             </functional_group>
          </functional_groups>
@@ -434,7 +568,7 @@
             <component name="system" uuid="0cd75da4-317c-43c7-afdc-4820c001cd07" type_id="system_54b53072540eeeb8f8e9343e71f28176">
                <config_set_global name="global_system_definitions"/>
             </component>
-            <component name="msg" uuid="67257997-35ce-45fc-a5b7-2e5869349566" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
+            <component name="msg" uuid="bc228b97-df12-4b7c-89a7-9734ccdc3093" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
                <config_set_global name="global_messages"/>
             </component>
          </components>

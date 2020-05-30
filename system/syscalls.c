@@ -11,7 +11,7 @@
 static SemaphoreHandle_t mallocMutex = NULL;
 static SemaphoreHandle_t sbrkMutex = NULL;
 
-void __syscalls_system_init()
+__attribute__((constructor(101))) static void __syscalls_system_init()
 {
   mallocMutex = xSemaphoreCreateRecursiveMutex();
   configASSERT(mallocMutex);

@@ -37,20 +37,20 @@ extern "C" {
  */
 void BOARD_InitBootPins(void);
 
-/* GPIO_SD_B0_04 (coord H2), LED3 */
-#define BOARD_INITPINS_LED3_GPIO                                           GPIO3   /*!< GPIO device name: GPIO3 */
-#define BOARD_INITPINS_LED3_PORT                                           GPIO3   /*!< PORT device name: GPIO3 */
-#define BOARD_INITPINS_LED3_PIN                                              16U   /*!< GPIO3 pin index: 16 */
+/* GPIO_SD_B0_04 (coord H2), LED1 */
+#define BOARD_INITPINS_LED1_GPIO                                           GPIO3   /*!< GPIO device name: GPIO3 */
+#define BOARD_INITPINS_LED1_PORT                                           GPIO3   /*!< PORT device name: GPIO3 */
+#define BOARD_INITPINS_LED1_PIN                                              16U   /*!< GPIO3 pin index: 16 */
 
 /* GPIO_SD_B0_00 (coord J4), LED2 */
 #define BOARD_INITPINS_LED2_GPIO                                           GPIO3   /*!< GPIO device name: GPIO3 */
 #define BOARD_INITPINS_LED2_PORT                                           GPIO3   /*!< PORT device name: GPIO3 */
 #define BOARD_INITPINS_LED2_PIN                                              12U   /*!< GPIO3 pin index: 12 */
 
-/* GPIO_SD_B0_03 (coord K1), LED1 */
-#define BOARD_INITPINS_LED1_GPIO                                           GPIO3   /*!< GPIO device name: GPIO3 */
-#define BOARD_INITPINS_LED1_PORT                                           GPIO3   /*!< PORT device name: GPIO3 */
-#define BOARD_INITPINS_LED1_PIN                                              15U   /*!< GPIO3 pin index: 15 */
+/* GPIO_SD_B0_03 (coord K1), LED3 */
+#define BOARD_INITPINS_LED3_GPIO                                           GPIO3   /*!< GPIO device name: GPIO3 */
+#define BOARD_INITPINS_LED3_PORT                                           GPIO3   /*!< PORT device name: GPIO3 */
+#define BOARD_INITPINS_LED3_PIN                                              15U   /*!< GPIO3 pin index: 15 */
 
 /* GPIO_B0_08 (coord B9), ENET2_RST */
 #define BOARD_INITPINS_ENET2_RST_GPIO                                      GPIO2   /*!< GPIO device name: GPIO2 */

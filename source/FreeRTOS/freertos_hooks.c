@@ -3,7 +3,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include "fsl_common.h"
+#include "board.h"
 
 #if defined(configAPPLICATION_ALLOCATED_HEAP) && configAPPLICATION_ALLOCATED_HEAP == 1
   uint8_t ucHeap[configTOTAL_HEAP_SIZE];
@@ -40,7 +40,7 @@ void FreeRTOSDelay(uint32_t ms)
 
 void vApplicationMallocFailedHook()
 {
-//  my_uart_puts("Malloc Failed!\n");
+  puts("Malloc Failed!\n");
   taskDISABLE_INTERRUPTS();
   for (;; )
     ;
@@ -48,7 +48,13 @@ void vApplicationMallocFailedHook()
 
 void vApplicationIdleHook()
 {
-  __WFI();
+  if (xTaskGetTickCount() % 600 < 4)
+    BOARD_LED_SET(BOARD_LED1, 1);
+
+  if (xTaskGetTickCount() % 600 >= 4)
+    BOARD_LED_SET(BOARD_LED1, 0);
+
+//  __WFI();
 }
 
 void vApplicationStackOverflowHook(TaskHandle_t pxTask, signed char *pcTaskName)

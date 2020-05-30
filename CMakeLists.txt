@@ -108,9 +108,10 @@ include(FreeRTOS.cmake)
 include_directories(
   ./include
   ./include/usb
+  ./board
+  ./system/components/lan8720
   ./include/FreeRTOS
   ./modules/FreeRTOS/portable/GCC/ARM_CM4F
-  ./board
 )
 
 add_executable(com.elf
@@ -123,6 +124,7 @@ add_executable(com.elf
   ./system/syscalls.c
   ./system/utils/fsl_sbrk.c
   ./system/fault_handlers.c
+  ./system/components/lan8720/fsl_phy.c
 
   #./source/FreeRTOS/freertos_heap.c
   ./source/FreeRTOS/freertos_hooks.c
