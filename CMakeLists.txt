@@ -1,7 +1,5 @@
 cmake_minimum_required (VERSION 3.7)
-#INCLUDE(CMakeForceCompiler)
-#CMAKE_FORCE_C_COMPILER(arm-none-eabi-gcc GNU)
-#CMAKE_FORCE_CXX_COMPILER(arm-none-eabi-g++ GNU)
+SET(CMAKE_SYSTEM_NAME Generic)
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 
