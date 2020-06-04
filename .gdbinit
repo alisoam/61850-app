@@ -8,6 +8,7 @@ monitor flash breakpoints = 1
 
 load
 
+
 monitor reg r13 = (0x00000000)
 monitor reg pc = (0x00000004)
 
