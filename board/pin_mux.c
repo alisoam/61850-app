@@ -12,9 +12,9 @@ package_id: MIMXRT1062DVL6A
 mcu_data: ksdk2_0
 processor_version: 7.0.1
 pin_labels:
-- {pin_num: K1, pin_signal: GPIO_SD_B0_03, label: LED3, identifier: AA;LED1;LED2;LED3}
-- {pin_num: J4, pin_signal: GPIO_SD_B0_00, label: LED2, identifier: LED2;LED3}
-- {pin_num: H2, pin_signal: GPIO_SD_B0_04, label: LED1, identifier: LED3;LED1}
+- {pin_num: K1, pin_signal: GPIO_SD_B0_03, label: LED3, identifier: LED3}
+- {pin_num: J4, pin_signal: GPIO_SD_B0_00, label: LED2, identifier: LED2}
+- {pin_num: H2, pin_signal: GPIO_SD_B0_04, label: LED1, identifier: LED1}
 - {pin_num: B9, pin_signal: GPIO_B0_08, label: ENET2_RST, identifier: ENET2_RST}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
@@ -40,9 +40,9 @@ BOARD_InitPins:
 - options: {callFromInitBoot: 'true', coreID: core0, enableClock: 'true'}
 - pin_list:
   - {pin_num: G13, peripheral: ARM, signal: arm_trace_swo, pin_signal: GPIO_AD_B0_10}
-  - {pin_num: H2, peripheral: GPIO3, signal: 'gpio_io, 16', pin_signal: GPIO_SD_B0_04, identifier: LED1, direction: OUTPUT}
-  - {pin_num: J4, peripheral: GPIO3, signal: 'gpio_io, 12', pin_signal: GPIO_SD_B0_00, identifier: LED2, direction: OUTPUT}
-  - {pin_num: K1, peripheral: GPIO3, signal: 'gpio_io, 15', pin_signal: GPIO_SD_B0_03, identifier: LED3, direction: OUTPUT}
+  - {pin_num: H2, peripheral: GPIO3, signal: 'gpio_io, 16', pin_signal: GPIO_SD_B0_04, direction: OUTPUT}
+  - {pin_num: J4, peripheral: GPIO3, signal: 'gpio_io, 12', pin_signal: GPIO_SD_B0_00, direction: OUTPUT}
+  - {pin_num: K1, peripheral: GPIO3, signal: 'gpio_io, 15', pin_signal: GPIO_SD_B0_03, direction: OUTPUT}
   - {pin_num: B13, peripheral: ENET, signal: enet_ref_clk, pin_signal: GPIO_B1_10, software_input_on: Enable, pull_keeper_select: Keeper, pull_keeper_enable: Disable,
     speed: MHZ_50, slew_rate: Fast}
   - {pin_num: A13, peripheral: ENET, signal: enet_tx_en, pin_signal: GPIO_B1_09, pull_up_down_config: Pull_Up_100K_Ohm}

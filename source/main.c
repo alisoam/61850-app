@@ -37,12 +37,15 @@ __attribute__((constructor(101))) static void setupHardware() {
   IOMUXC_EnableMode(IOMUXC_GPR, IOMUXC_GPR_GPR1_ENET1_CLK_SEL_MASK, false);
   IOMUXC_EnableMode(IOMUXC_GPR, IOMUXC_GPR_GPR1_ENET2_CLK_SEL_MASK, false);
 
+  CLOCK_EnableClock(kCLOCK_Enet);
+  CLOCK_EnableClock(kCLOCK_Enet2);
+
   GPIO_PinWrite(GPIO2, 8, 1); //phy 2 rst pin
 }
 
 /********************************/
 #define ENET_RXBD_NUM (1)
-#define ENET_TXBD_NUM (4)
+#define ENET_TXBD_NUM (50)
 #define ENET_RXBUFF_SIZE (ENET_FRAME_MAX_FRAMELEN)
 #define ENET_TXBUFF_SIZE (ENET_FRAME_MAX_FRAMELEN)
 #define ENET_DATA_LENGTH (1000)
@@ -88,11 +91,9 @@ static void initRxDesc(enet_rx_bd_struct_t* desc, size_t count) {
 }
 
 static void ENETInit(ENET_Type* enet, uint32_t rx_desc, uint32_t tx_desc) {
-  CLOCK_EnableClock(kCLOCK_Enet2);
-
   enet->ECR |= ENET_ECR_RESET_MASK;
 
-  enet->RCR |= ENET_RCR_RMII_MODE_MASK | ENET_RCR_RMII_MODE_MASK | ENET_RCR_MII_MODE_MASK;
+  enet->RCR |= ENET_RCR_RMII_MODE_MASK | ENET_RCR_RMII_MODE_MASK | ENET_RCR_MII_MODE_MASK | ENET_RCR_MAX_FL(1528);
   enet->RCR &= ~(ENET_RCR_LOOP_MASK);
   enet->TCR |= ENET_TCR_ADDINS_MASK;
 
@@ -118,7 +119,7 @@ static void ENETInit(ENET_Type* enet, uint32_t rx_desc, uint32_t tx_desc) {
   enet->TACC |= 0;
   enet->RACC |= ENET_RACC_LINEDIS_MASK;
 
-  enet->ECR |= ENET_ECR_DBSWP_MASK | ENET_ECR_EN1588_MASK | ENET_ECR_ETHEREN_MASK;
+  enet->ECR |= ENET_ECR_DBSWP_MASK/* | ENET_ECR_EN1588_MASK*/ | ENET_ECR_ETHEREN_MASK;
 }
 
 static void setLinkUP(ENET_Type * enet, bool full_duplex, bool T100) {
@@ -139,37 +140,35 @@ static void setLinkUP(ENET_Type * enet, bool full_duplex, bool T100) {
 static void setLinkDown(ENET_Type * enet) {
 }
 
-static void ENETTest() {
-  uint32_t i = 0;
+static ENET_Type* enet[] = {ENET, ENET2};
+static void sendTask(void* arg) {
+  uint32_t i = (uint32_t)arg;
+  ENET_Type* e = enet[i];
+
+  uint32_t j = 0;
   while (true) {
     uint32_t eir = ENET->EIR;
-    ENET->EIR = eir;
-    printf("EIR %lx\n", eir);
+    e->EIR = eir & ~(ENET_EIR_MII_MASK);
+//    printf("EIR %lx\n", eir);
 
+    tx_desc[i][j].buffer = enet_frame;
+    tx_desc[i][j].length = ENET_DATA_LENGTH;
+    tx_desc[i][j].control |= ENET_BUFFDESCRIPTOR_TX_LAST_MASK | ENET_BUFFDESCRIPTOR_TX_TRANMITCRC_MASK | ENET_BUFFDESCRIPTOR_TX_READY_MASK;
+    e->TDAR |= ENET_TDAR_TDAR_MASK;
 
-
-    tx_desc[0][i].buffer = enet_frame;
-    tx_desc[0][i].length = ENET_DATA_LENGTH;
-//    tx_desc[0][i].control &= ~ENET_BUFFDESCRIPTOR_TX_READY_MASK;
-    tx_desc[0][i].control |= ENET_BUFFDESCRIPTOR_TX_LAST_MASK | ENET_BUFFDESCRIPTOR_TX_TRANMITCRC_MASK | ENET_BUFFDESCRIPTOR_TX_READY_MASK;
-    ENET->TDAR |= ENET_TDAR_TDAR_MASK;
-    
-    printf("Sent %lu\n", i);
-    i++;
-    if (i > ENET_TXBD_NUM)
-      i = 0;
-    vTaskDelay(configTICK_RATE_HZ);
+//    printf("Sent %lu:%lu\n", i, j);
+    j++;
+    if (j >= ENET_TXBD_NUM)
+      j = 0;
+    vTaskDelay(1);
   }
 }
 
 static void enetTask(void* arg) {
-  ENET_Type* enet[] = {ENET, ENET2};
   uint32_t phy_addr[] = {BOARD_ENET0_PHY_ADDRESS, BOARD_ENET1_PHY_ADDRESS};
   uint32_t sysClock = CLOCK_GetFreq(kCLOCK_IpgClk);
   struct PhyState phy_state[2];
-  for (unsigned int i = 1; i < 2; i++) {
-
-
+  for (unsigned int i = 0; i < 2; i++) {
     initRxDesc(rx_desc[i], ENET_RXBD_NUM);
     initTxDesc(tx_desc[i], ENET_TXBD_NUM);
     ENETInit(enet[i], (uint32_t)rx_desc[i], (uint32_t)tx_desc[i]);
@@ -182,16 +181,20 @@ static void enetTask(void* arg) {
     }
   }
 
+  ENET_BuildBroadCastFrame();
+  xTaskCreate(sendTask, "send", 2*configMINIMAL_STACK_SIZE, (void*)0, tskIDLE_PRIORITY, NULL);
+  xTaskCreate(sendTask, "send", 2*configMINIMAL_STACK_SIZE, (void*)1, tskIDLE_PRIORITY, NULL);
+
   while (1) {
     bool busy = false;
-    for (unsigned int i = 1; i < 2; i++) {
+    for (unsigned int i = 0; i < 2; i++) {
       uint32_t physts = lpcPHYStsPoll(&phy_state[i]);
       if (physts & PHY_LINK_CHANGED) {
         if (physts & PHY_LINK_CONNECTED) {
-//          boardLedSet(BOARD_LED2 + i, 1);
+          boardLedSet(BOARD_LED2 + i, 1);
           setLinkUP(enet[i], physts & PHY_LINK_FULLDUPLX, physts & PHY_LINK_SPEED100);
         } else {
-//          boardLedSet(BOARD_LED2 + i, 0);
+          boardLedSet(BOARD_LED2 + i, 0);
           setLinkDown(enet[i]);
         }
         busy |= physts & PHY_LINK_BUSY;
@@ -221,11 +224,9 @@ int main()
 {
   puts("Programm Started...");
   printf("System clock is %lu\n", SystemCoreClock);
-  ENET_BuildBroadCastFrame();
 
   xTaskCreate(mainTask, "main", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
   xTaskCreate(enetTask, "enet", 2*configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
-//  xTaskCreate(enetTask, "send", 2*configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 
   vTaskStartScheduler();
   return 1;

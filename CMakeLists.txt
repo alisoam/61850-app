@@ -127,7 +127,7 @@ add_executable(com.elf
   #./source/FreeRTOS/freertos_heap.c
   ./source/FreeRTOS/freertos_hooks.c
   ./modules/FreeRTOS/portable/GCC/ARM_CM4F/port.c
-  ./modules/FreeRTOS/portable/MemMang/heap_3.c
+  ./modules/FreeRTOS/portable/MemMang/heap_4.c
 
   ./source/usb/usb_device_cdc_acm.c
   ./source/usb/usb_device_ch9.c

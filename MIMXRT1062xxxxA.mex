@@ -24,9 +24,9 @@
             <processor_version>7.0.1</processor_version>
             <power_domains/>
             <pin_labels>
-               <pin_label pin_num="K1" pin_signal="GPIO_SD_B0_03" label="LED3" identifier="AA;LED1;LED2;LED3"/>
-               <pin_label pin_num="J4" pin_signal="GPIO_SD_B0_00" label="LED2" identifier="LED2;LED3"/>
-               <pin_label pin_num="H2" pin_signal="GPIO_SD_B0_04" label="LED1" identifier="LED3;LED1"/>
+               <pin_label pin_num="K1" pin_signal="GPIO_SD_B0_03" label="LED3" identifier="LED3"/>
+               <pin_label pin_num="J4" pin_signal="GPIO_SD_B0_00" label="LED2" identifier="LED2"/>
+               <pin_label pin_num="H2" pin_signal="GPIO_SD_B0_04" label="LED1" identifier="LED1"/>
                <pin_label pin_num="B9" pin_signal="GPIO_B0_08" label="ENET2_RST" identifier="ENET2_RST"/>
             </pin_labels>
          </pins_profile>
@@ -54,6 +54,11 @@
                         <data>true</data>
                      </feature>
                   </dependency>
+                  <dependency resourceType="Peripheral" resourceId="SEMC" description="Peripheral SEMC is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
+                     <feature name="initialized" evaluation="equal">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
                   <dependency resourceType="SWComponent" resourceId="platform.drivers.common" description="Pins initialization requires the COMMON Driver in the project." problem_level="2" source="Pins:BOARD_InitPins">
                      <feature name="enabled" evaluation="equal" configuration="core0">
                         <data>true</data>
@@ -74,19 +79,16 @@
                   <pin peripheral="ARM" signal="arm_trace_swo" pin_num="G13" pin_signal="GPIO_AD_B0_10"/>
                   <pin peripheral="GPIO3" signal="gpio_io, 16" pin_num="H2" pin_signal="GPIO_SD_B0_04">
                      <pin_features>
-                        <pin_feature name="identifier" value="LED1"/>
                         <pin_feature name="direction" value="OUTPUT"/>
                      </pin_features>
                   </pin>
                   <pin peripheral="GPIO3" signal="gpio_io, 12" pin_num="J4" pin_signal="GPIO_SD_B0_00">
                      <pin_features>
-                        <pin_feature name="identifier" value="LED2"/>
                         <pin_feature name="direction" value="OUTPUT"/>
                      </pin_features>
                   </pin>
                   <pin peripheral="GPIO3" signal="gpio_io, 15" pin_num="K1" pin_signal="GPIO_SD_B0_03">
                      <pin_features>
-                        <pin_feature name="identifier" value="LED3"/>
                         <pin_feature name="direction" value="OUTPUT"/>
                      </pin_features>
                   </pin>
@@ -240,6 +242,357 @@
                         <pin_feature name="pull_keeper_select" value="Pull"/>
                         <pin_feature name="speed" value="MHZ_200"/>
                         <pin_feature name="drive_strength" value="R0_5"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="ADDR, 00" pin_num="C2" pin_signal="GPIO_EMC_09">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="ADDR, 01" pin_num="G1" pin_signal="GPIO_EMC_10">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="ADDR, 02" pin_num="G3" pin_signal="GPIO_EMC_11">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="ADDR, 03" pin_num="H1" pin_signal="GPIO_EMC_12">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="ADDR, 05" pin_num="B6" pin_signal="GPIO_EMC_14">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="ADDR, 06" pin_num="B1" pin_signal="GPIO_EMC_15">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="ADDR, 07" pin_num="A5" pin_signal="GPIO_EMC_16">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="ADDR, 08" pin_num="A4" pin_signal="GPIO_EMC_17">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="ADDR, 09" pin_num="B2" pin_signal="GPIO_EMC_18">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="ADDR, 04" pin_num="A6" pin_signal="GPIO_EMC_13">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="ADDR, 10" pin_num="G2" pin_signal="GPIO_EMC_23">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="ADDR, 11" pin_num="B4" pin_signal="GPIO_EMC_19">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="ADDR, 12" pin_num="A3" pin_signal="GPIO_EMC_20">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="BA, 0" pin_num="C1" pin_signal="GPIO_EMC_21">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="BA, 1" pin_num="F1" pin_signal="GPIO_EMC_22">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="semc_cas" pin_num="D3" pin_signal="GPIO_EMC_24">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="semc_cke" pin_num="A2" pin_signal="GPIO_EMC_27">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Keeper"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="semc_clk" pin_num="B3" pin_signal="GPIO_EMC_26">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DM, 1" pin_num="D6" pin_signal="GPIO_EMC_38">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DM, 0" pin_num="H3" pin_signal="GPIO_EMC_08">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DATA, 15" pin_num="E4" pin_signal="GPIO_EMC_37">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DATA, 14" pin_num="C3" pin_signal="GPIO_EMC_36">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DATA, 13" pin_num="E5" pin_signal="GPIO_EMC_35">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DATA, 12" pin_num="D4" pin_signal="GPIO_EMC_34">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DATA, 11" pin_num="C4" pin_signal="GPIO_EMC_33">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DATA, 10" pin_num="D5" pin_signal="GPIO_EMC_32">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="semc_ras" pin_num="D2" pin_signal="GPIO_EMC_25">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DATA, 00" pin_num="E3" pin_signal="GPIO_EMC_00">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DATA, 01" pin_num="F3" pin_signal="GPIO_EMC_01">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DATA, 02" pin_num="F4" pin_signal="GPIO_EMC_02">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DATA, 03" pin_num="G4" pin_signal="GPIO_EMC_03">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DATA, 04" pin_num="F2" pin_signal="GPIO_EMC_04">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DATA, 05" pin_num="G5" pin_signal="GPIO_EMC_05">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DATA, 06" pin_num="H5" pin_signal="GPIO_EMC_06">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DATA, 07" pin_num="H4" pin_signal="GPIO_EMC_07">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DATA, 08" pin_num="C6" pin_signal="GPIO_EMC_30">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="DATA, 09" pin_num="C5" pin_signal="GPIO_EMC_31">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="semc_we" pin_num="D1" pin_signal="GPIO_EMC_28">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="SEMC" signal="CS, 0" pin_num="E1" pin_signal="GPIO_EMC_29">
+                     <pin_features>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="speed" value="MHZ_200"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
                         <pin_feature name="slew_rate" value="Fast"/>
                      </pin_features>
                   </pin>
@@ -451,28 +804,28 @@
                      </config_set>
                   </instance>
                   <instance name="TEMPMON" uuid="f37394a6-1e19-4007-a2ed-fb8f6853e460" type="tempmon" type_id="tempmon_c966e400757748d37785414258f2801c" mode="general" peripheral="TEMPMON" enabled="true" comment="" custom_name_enabled="false">
-                     <config_set name="fsl_tempmon" quick_selection="QuickSelection1">
+                     <config_set name="fsl_tempmon">
                         <struct name="tempmon_config">
                            <setting name="singleMeasurement" value="false"/>
                            <struct name="clock_config">
                               <setting name="clockSource" value="LowFreqClock"/>
                               <setting name="clockSourceFreq" value="BOARD_BootClockRUN"/>
                            </struct>
-                           <setting name="frequencySet" value="10922 Hz"/>
+                           <setting name="frequencySet" value="1s"/>
                            <setting name="lowAlarmTemp" value="39"/>
-                           <setting name="highAlarmTemp" value="44"/>
+                           <setting name="highAlarmTemp" value="40"/>
                            <setting name="panicAlarmTemp" value="90"/>
                         </struct>
                         <setting name="startMeasure" value="true"/>
                         <struct name="interruptsCfg">
-                           <setting name="isInterruptEnabledLowHigh" value="false"/>
+                           <setting name="isInterruptEnabledLowHigh" value="true"/>
                            <struct name="interruptLowHigh">
                               <setting name="IRQn" value="TEMP_LOW_HIGH_IRQn"/>
                               <setting name="enable_priority" value="true"/>
                               <setting name="priority" value="0"/>
                               <setting name="enable_custom_name" value="false"/>
                            </struct>
-                           <setting name="isInterruptEnabledPanic" value="false"/>
+                           <setting name="isInterruptEnabledPanic" value="true"/>
                            <struct name="interruptPanic">
                               <setting name="IRQn" value="TEMP_PANIC_IRQn"/>
                               <setting name="enable_priority" value="true"/>
@@ -568,7 +921,7 @@
             <component name="system" uuid="0cd75da4-317c-43c7-afdc-4820c001cd07" type_id="system_54b53072540eeeb8f8e9343e71f28176">
                <config_set_global name="global_system_definitions"/>
             </component>
-            <component name="msg" uuid="bc228b97-df12-4b7c-89a7-9734ccdc3093" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
+            <component name="msg" uuid="aebce203-dba2-4a20-8efb-d243c4d1bd96" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
                <config_set_global name="global_messages"/>
             </component>
          </components>

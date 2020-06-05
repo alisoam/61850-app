@@ -61,37 +61,44 @@ instance:
       - clock_config:
         - clockSource: 'LowFreqClock'
         - clockSourceFreq: 'BOARD_BootClockRUN'
-      - frequencySet: '10922 Hz'
+      - frequencySet: '1s'
       - lowAlarmTemp: '39'
-      - highAlarmTemp: '44'
+      - highAlarmTemp: '40'
       - panicAlarmTemp: '90'
     - startMeasure: 'true'
     - interruptsCfg:
-      - isInterruptEnabledLowHigh: 'false'
+      - isInterruptEnabledLowHigh: 'true'
       - interruptLowHigh:
         - IRQn: 'TEMP_LOW_HIGH_IRQn'
         - enable_priority: 'true'
         - priority: '0'
         - enable_custom_name: 'false'
-      - isInterruptEnabledPanic: 'false'
+      - isInterruptEnabledPanic: 'true'
       - interruptPanic:
         - IRQn: 'TEMP_PANIC_IRQn'
         - enable_priority: 'true'
         - priority: '1'
         - enable_custom_name: 'false'
-    - quick_selection: 'QuickSelection1'
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
 const tempmon_config_t TEMPMON_config = {
-  .frequency = 3,
+  .frequency = 32768,
   .lowAlarmTemp = 39,
-  .highAlarmTemp = 44,
+  .highAlarmTemp = 40,
   .panicAlarmTemp = 90
 };
 
 void TEMPMON_init(void) {
   /* TEMPMON initialization */
   TEMPMON_Init(TEMPMON_PERIPHERAL, &TEMPMON_config);
+  /* Interrupt vector TEMP_LOW_HIGH_IRQn priority settings in the NVIC */
+  NVIC_SetPriority(TEMP_LOW_HIGH_IRQn, TEMPMON_LOW_HIGH_IRQ_PRIORITY);
+  /* Interrupt vector TEMP_PANIC_IRQn priority settings in the NVIC */
+  NVIC_SetPriority(TEMP_PANIC_IRQn, TEMPMON_PANIC_IRQ_PRIORITY);
+  /* Enable interrupt TEMP_LOW_HIGH_IRQn request in the NVIC */
+  EnableIRQ(TEMP_LOW_HIGH_IRQn);
+  /* Enable interrupt TEMP_PANIC_IRQn request in the NVIC */
+  EnableIRQ(TEMP_PANIC_IRQn);
   /* Start measure */
   TEMPMON_StartMeasure(TEMPMON_PERIPHERAL);
 }
