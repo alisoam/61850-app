@@ -13,39 +13,6 @@
 #include "fsl_phy.h"
 #include "pin_mux.h"
 
-static void SWO_Init() {
-  uint32_t SWOSpeed = 64000;
-  //  uint32_t prescaler = (SystemCoreClock / SWOSpeed) - 1;
-  uint32_t prescaler = (BOARD_BOOTCLOCKRUN_TRACE_CLK_ROOT / SWOSpeed) - 1;
-
-  CoreDebug->DEMCR = CoreDebug_DEMCR_TRCENA_Msk;
-
-  if ((CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk) == 0U)
-  {
-    while (1);
-  }
-
-  /* Lock access */
-  ITM->LAR = 0xC5ACCE55U;
-  /* Disable ITM */
-  ITM->TER &= ~(1U << 1);
-  ITM->TCR = 0U;
-  /* select SWO encoding protocol */
-  TPI->SPPR = 2;
-  /* select asynchronous clock prescaler */
-  TPI->ACPR = prescaler;
-  /* allow unprivilege access */
-  ITM->TPR = 0;
-  /* enable ITM */
-  ITM->TCR = ITM_TCR_ITMENA_Msk | ITM_TCR_SYNCENA_Msk
-    | ITM_TCR_TraceBusID_Msk
-    | ITM_TCR_SWOENA_Msk | ITM_TCR_DWTENA_Msk;
-  /* enable the port bits */
-  ITM->TER = 1U << 1;
-
-  DWT->CTRL = 0x400003FE; /* DWT_CTRL */
-  TPI->FFCR = 0x00000100; /* Formatter and Flush Control Register */
-}
 
 __attribute__((constructor(101))) static void setupHardware() {
   BOARD_ConfigMPU();
@@ -53,6 +20,7 @@ __attribute__((constructor(101))) static void setupHardware() {
   BOARD_BootClockRUN();
 
   CLOCK_EnableClock(kCLOCK_Trace);
+  extern void SWO_Init();
   SWO_Init();
 
   const clock_enet_pll_config_t config = {
@@ -74,7 +42,7 @@ __attribute__((constructor(101))) static void setupHardware() {
 
 /********************************/
 #define ENET_RXBD_NUM (1)
-#define ENET_TXBD_NUM (1)
+#define ENET_TXBD_NUM (4)
 #define ENET_RXBUFF_SIZE (ENET_FRAME_MAX_FRAMELEN)
 #define ENET_TXBUFF_SIZE (ENET_FRAME_MAX_FRAMELEN)
 #define ENET_DATA_LENGTH (1000)
@@ -82,57 +50,47 @@ __attribute__((constructor(101))) static void setupHardware() {
 #ifndef APP_ENET_BUFF_ALIGNMENT
 #define APP_ENET_BUFF_ALIGNMENT ENET_BUFF_ALIGNMENT
 #endif
+#define ENET_TX_LAST_FRAME_CONTROL (ENET_BUFFDESCRIPTOR_TX_LAST_MASK | ENET_BUFFDESCRIPTOR_TX_TRANMITCRC_MASK)
+
 
 AT_NONCACHEABLE_SECTION_ALIGN(enet_rx_bd_struct_t rx_desc[2][ENET_RXBD_NUM], ENET_BUFF_ALIGNMENT);
 AT_NONCACHEABLE_SECTION_ALIGN(enet_tx_bd_struct_t tx_desc[2][ENET_TXBD_NUM], ENET_BUFF_ALIGNMENT);
 
 uint8_t rx_buff[2][ENET_RXBD_NUM][ENET_RXBUFF_SIZE];
-uint8_t enet_frame[2][ENET_TXBD_NUM][ENET_TXBUFF_SIZE];
 
+uint8_t enet_frame[ENET_TXBUFF_SIZE];
 
 static void ENET_BuildBroadCastFrame(void) {
   uint32_t count  = 0;
   uint32_t length = ENET_DATA_LENGTH - 14;
 
-  for (uint32_t i = 0; i < 2; i++) {
-    uint8_t* buff = enet_frame[i][0];
-    
-    for (count = 0; count < 6U; count++)
-      buff[count] = 0xFFU;
-    buff[12] = (length >> 8) & 0xFFU;
-    buff[13] = length & 0xFFU;
-
-    for (count = 0; count < length; count++)
-      buff[count + 14] = count % 0xFFU;
-  }
+  uint8_t* buff = enet_frame;
+  for (count = 0; count < 6U; count++)
+    buff[count] = 0xFFU;
+  buff[12] = (length >> 8) & 0xFFU;
+  buff[13] = length & 0xFFU;
+  for (count = 0; count < length; count++)
+    buff[count + 14] = count % 0xFFU;
 }
 
 void pDelayMs(uint32_t ms) {
   vTaskDelay(ms / 5);
 }
 
-static void initTxDesc() {
-  tx_desc[0][0].length = ENET_DATA_LENGTH;
-  tx_desc[0][0].control = ENET_BUFFDESCRIPTOR_TX_WRAP_MASK |
-    ENET_BUFFDESCRIPTOR_TX_LAST_MASK | ENET_BUFFDESCRIPTOR_TX_TRANMITCRC_MASK;
-  tx_desc[0][0].control &= ~ENET_BUFFDESCRIPTOR_TX_READY_MASK;
-
-  tx_desc[0][0].buffer = enet_frame[0][0];
+static void initTxDesc(enet_tx_bd_struct_t* desc, size_t count) {
+  memset(desc, 0, count * sizeof(enet_tx_bd_struct_t));
+  desc[count - 1].control |= ENET_BUFFDESCRIPTOR_TX_WRAP_MASK;
 }
 
-static void initRxDesc() {
-  rx_desc[0][0].control = ENET_BUFFDESCRIPTOR_RX_WRAP_MASK;
-
-  rx_desc[0][0].buffer = rx_buff[0][0];
+static void initRxDesc(enet_rx_bd_struct_t* desc, size_t count) {
+  memset(desc, 0, count * sizeof(enet_tx_bd_struct_t));
+  desc[count - 1].control |= ENET_BUFFDESCRIPTOR_RX_WRAP_MASK;
 }
 
-static void ENETInit(ENET_Type * enet) {
+static void ENETInit(ENET_Type* enet, uint32_t rx_desc, uint32_t tx_desc) {
   CLOCK_EnableClock(kCLOCK_Enet2);
 
   enet->ECR |= ENET_ECR_RESET_MASK;
-
-  initRxDesc();
-  initTxDesc();
 
   enet->RCR |= ENET_RCR_RMII_MODE_MASK | ENET_RCR_RMII_MODE_MASK | ENET_RCR_MII_MODE_MASK;
   enet->RCR &= ~(ENET_RCR_LOOP_MASK);
@@ -143,8 +101,8 @@ static void ENETInit(ENET_Type * enet) {
 
 //  enet->TFWR |= ENET_TFWR_STRFWD_MASK | 0x1U;
 
-  enet->RDSR = (uint32_t)(&(rx_desc[0][0]));
-  enet->TDSR = (uint32_t)(&(tx_desc[0][0]));
+  enet->RDSR = rx_desc;
+  enet->TDSR = tx_desc;
 
   enet->MRBR |= ENET_MRBR_R_BUF_SIZE(ENET_RXBUFF_SIZE);
 
@@ -182,60 +140,64 @@ static void setLinkDown(ENET_Type * enet) {
 }
 
 static void ENETTest() {
-  tx_desc[0][0].control |= ENET_BUFFDESCRIPTOR_TX_READY_MASK;
-  ENET2->TDAR |= ENET_TDAR_TDAR_MASK;
-
+  uint32_t i = 0;
   while (true) {
-    printf("CON %x\n", tx_desc[0][0].control);
-    uint32_t eir = ENET2->EIR;
-    ENET2->EIR = eir;
+    uint32_t eir = ENET->EIR;
+    ENET->EIR = eir;
     printf("EIR %lx\n", eir);
 
-    tx_desc[0][0].control |= ENET_BUFFDESCRIPTOR_TX_READY_MASK;
-    ENET2->TDAR |= ENET_TDAR_TDAR_MASK;
-    printf("Sent\n");
+
+
+    tx_desc[0][i].buffer = enet_frame;
+    tx_desc[0][i].length = ENET_DATA_LENGTH;
+//    tx_desc[0][i].control &= ~ENET_BUFFDESCRIPTOR_TX_READY_MASK;
+    tx_desc[0][i].control |= ENET_BUFFDESCRIPTOR_TX_LAST_MASK | ENET_BUFFDESCRIPTOR_TX_TRANMITCRC_MASK | ENET_BUFFDESCRIPTOR_TX_READY_MASK;
+    ENET->TDAR |= ENET_TDAR_TDAR_MASK;
+    
+    printf("Sent %lu\n", i);
+    i++;
+    if (i > ENET_TXBD_NUM)
+      i = 0;
     vTaskDelay(configTICK_RATE_HZ);
   }
 }
 
 static void enetTask(void* arg) {
-  uint32_t i = (uint32_t) arg;
-  ENET_Type* enet = (i == 0)? ENET: ENET2;
-  uint32_t phy_addr = (i == 0)? BOARD_ENET0_PHY_ADDRESS: BOARD_ENET1_PHY_ADDRESS;
-
-  ENETInit(ENET2);
-
+  ENET_Type* enet[] = {ENET, ENET2};
+  uint32_t phy_addr[] = {BOARD_ENET0_PHY_ADDRESS, BOARD_ENET1_PHY_ADDRESS};
   uint32_t sysClock = CLOCK_GetFreq(kCLOCK_IpgClk);
-  struct PhyState phy_state;
-  status_t status = PHY_Init(&phy_state, enet, phy_addr, sysClock);
-  if (status != kStatus_Success) {
-    printf("%lu: failed to intialize the phy\n", i);
-    while (true)
-      ;
+  struct PhyState phy_state[2];
+  for (unsigned int i = 1; i < 2; i++) {
+
+
+    initRxDesc(rx_desc[i], ENET_RXBD_NUM);
+    initTxDesc(tx_desc[i], ENET_TXBD_NUM);
+    ENETInit(enet[i], (uint32_t)rx_desc[i], (uint32_t)tx_desc[i]);
+
+    status_t status = PHY_Init(&phy_state[i], enet[i], phy_addr[i], sysClock);
+    if (status != kStatus_Success) {
+      printf("failed to intialize the phy %u\n", i);
+      while (true)
+        ;
+    }
   }
 
-  printf("START\n");
   while (1) {
-    uint32_t physts = lpcPHYStsPoll(&phy_state);
-    if (physts & PHY_LINK_CHANGED) {
-      if (physts & PHY_LINK_CONNECTED) {
-        if (i == 0)
-          BOARD_LED_SET(BOARD_LED2, 1);
-        else
-          BOARD_LED_SET(BOARD_LED3, 1);
-        puts("Link is up");
-        setLinkUP(enet, physts & PHY_LINK_FULLDUPLX, physts & PHY_LINK_SPEED100);
-        ENETTest();
-      } else {
-        if (i == 0)
-          BOARD_LED_SET(BOARD_LED2, 0);
-        else
-          BOARD_LED_SET(BOARD_LED3, 0);
-        puts("Link is down");
-        setLinkDown(enet);
+    bool busy = false;
+    for (unsigned int i = 1; i < 2; i++) {
+      uint32_t physts = lpcPHYStsPoll(&phy_state[i]);
+      if (physts & PHY_LINK_CHANGED) {
+        if (physts & PHY_LINK_CONNECTED) {
+//          boardLedSet(BOARD_LED2 + i, 1);
+          setLinkUP(enet[i], physts & PHY_LINK_FULLDUPLX, physts & PHY_LINK_SPEED100);
+        } else {
+//          boardLedSet(BOARD_LED2 + i, 0);
+          setLinkDown(enet[i]);
+        }
+        busy |= physts & PHY_LINK_BUSY;
       }
     }
-    if (physts & PHY_LINK_BUSY)
+    if (busy)
       vTaskDelay(configTICK_RATE_HZ / 5);
     else
       vTaskDelay(configTICK_RATE_HZ);
@@ -260,10 +222,10 @@ int main()
   puts("Programm Started...");
   printf("System clock is %lu\n", SystemCoreClock);
   ENET_BuildBroadCastFrame();
-  xTaskCreate(mainTask, "main", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
 
-//  xTaskCreate(enetTask, "enet0", 2*configMINIMAL_STACK_SIZE, (void*)0, tskIDLE_PRIORITY, NULL);
-  xTaskCreate(enetTask, "enet1", 2*configMINIMAL_STACK_SIZE, (void*)1, tskIDLE_PRIORITY, NULL);
+  xTaskCreate(mainTask, "main", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
+  xTaskCreate(enetTask, "enet", 2*configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
+//  xTaskCreate(enetTask, "send", 2*configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 
   vTaskStartScheduler();
   return 1;

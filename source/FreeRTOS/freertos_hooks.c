@@ -48,12 +48,12 @@ void vApplicationMallocFailedHook()
 
 void vApplicationIdleHook()
 {
-  if (xTaskGetTickCount() % 600 < 4)
-    BOARD_LED_SET(BOARD_LED1, 1);
+/*  if (xTaskGetTickCount() % 600 < 4)
+    boardLedSet(BOARD_LED1, 1);
 
   if (xTaskGetTickCount() % 600 >= 4)
-    BOARD_LED_SET(BOARD_LED1, 0);
-
+    boardLedSet(BOARD_LED1, 0);
+*/
 //  __WFI();
 }
 

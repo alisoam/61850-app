@@ -79,8 +79,6 @@ extern clock_ip_name_t s_enetClock[FSL_FEATURE_SOC_ENET_COUNT];
 #define LAN8_PHYID1_OUI     0x0007		/*!< Expected PHY ID1 */
 #define LAN8_PHYID2_OUI     0xC0F0		/*!< Expected PHY ID2, except last 4 bits */
 
-/* DP83848 PHY update flags */
-static uint32_t physts, olddphysts;
 
 /* Pointer to delay function used for this driver */
 extern void pDelayMs(uint32_t ms);
@@ -208,7 +206,7 @@ status_t PHY_Init(struct PhyState* state, ENET_Type *base, uint32_t phy_addr, ui
 
 #if !(defined(FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL) && FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL)
   /* Set SMI first. */
-  CLOCK_EnableClock(s_enetClock[instance]);
+//  CLOCK_EnableClock(s_enetClock[instance]);
 #endif /* FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL */
   ENET_SetSMI(base, srcClock_Hz, false);
   uint32_t tmp;
@@ -285,7 +283,7 @@ uint32_t lpcPHYStsPoll(struct PhyState* state) {
       /* Read BMSR to clear faults */
       ENET_StartSMIRead(state->base, state->phy_addr, LAN8_BSR_REG, kENET_MiiReadValidFrame);
       state->physts &= ~PHY_LINK_CHANGED;
-      state->physts = physts | PHY_LINK_BUSY;
+      state->physts = state->physts | PHY_LINK_BUSY;
       state->phyustate = 1;
       break;
 

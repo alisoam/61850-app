@@ -155,3 +155,10 @@ void BOARD_ConfigMPU(void)
     SCB_EnableDCache();
     SCB_EnableICache();
 }
+
+
+void boardLedSet(unsigned int led, bool value) {
+  uint32_t ledPin[] = {BOARD_LED1_GPIO_PIN, BOARD_LED2_GPIO_PIN, BOARD_LED3_GPIO_PIN};
+  if (led < BOARD_LED_NUM)
+    GPIO_PinWrite(GPIO3, ledPin[led], value);
+}

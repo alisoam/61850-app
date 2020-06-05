@@ -18,6 +18,11 @@
 #define LED_ON   (1U)
 #define LED_OFF  (0U)
 
+#define BOARD_LED_NUM       (3U)
+#define BOARD_LED1          (0U)
+#define BOARD_LED2          (1U)
+#define BOARD_LED3          (2U)
+
 #define BOARD_LED1_GPIO GPIO3
 #define BOARD_LED1_GPIO_PIN (16U)
 
@@ -26,11 +31,6 @@
 
 #define BOARD_LED3_GPIO GPIO3
 #define BOARD_LED3_GPIO_PIN (15U)
-
-#define BOARD_LED1 BOARD_LED1_GPIO, BOARD_LED1_GPIO_PIN
-#define BOARD_LED2 BOARD_LED2_GPIO, BOARD_LED2_GPIO_PIN
-#define BOARD_LED3 BOARD_LED3_GPIO, BOARD_LED3_GPIO_PIN
-#define BOARD_LED_SET(LED, VAL) GPIO_PinWrite(LED, VAL)
 
 #define BOARD_FLASH_SIZE (0x800000U)
 
@@ -42,8 +42,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-
 void BOARD_ConfigMPU(void);
+
+void boardLedSet(unsigned int led, bool value);
 
 #if defined(__cplusplus)
 }

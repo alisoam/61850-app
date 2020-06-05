@@ -135,6 +135,7 @@ add_executable(com.elf
   ./source/usb/usb_device_descriptor.c
   ./source/usb/virtual_com.c
 
+  ./source/swo.c
   ./source/main.c
 )
 
