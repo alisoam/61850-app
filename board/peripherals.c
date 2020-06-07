@@ -42,6 +42,127 @@ component:
  * BOARD_InitPeripherals functional group
  **********************************************************************************************************************/
 /***********************************************************************************************************************
+ * SEMC initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'SEMC'
+- type: 'semc'
+- mode: 'general'
+- custom_name_enabled: 'false'
+- type_id: 'semc_8caeb64ecb2dd34cd7fd365f593107fd'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'SEMC'
+- config_sets:
+  - fsl_semc:
+    - enableDCD: 'false'
+    - clockConfig:
+      - clockSource: 'kSEMC_ClkSrcPeri'
+      - clockSourceFreq: 'BOARD_BootClockRUN'
+    - semc_config_t:
+      - dqsMode: 'kSEMC_Loopbackinternal'
+      - cmdTimeoutCycles: '0'
+      - busTimeoutCycles: '0x1F'
+      - queueWeight:
+        - queueaWeight:
+          - queueaConfig:
+            - qos: '0'
+            - aging: '0'
+            - slaveHitSwith: '0'
+            - slaveHitNoswitch: '0'
+          - queueaValue: '0'
+        - queuebWeight:
+          - queuebConfig:
+            - qos: '0'
+            - aging: '0'
+            - slaveHitSwith: '0'
+            - weightPagehit: '0'
+            - bankRotation: '0'
+          - queuebValue: '0'
+    - semc_sdram_config_t:
+      - csxPinMux: 'kSEMC_MUXCSX0'
+      - semcSdramCs: 'kSEMC_SDRAM_CS0'
+      - address: '0x80000000'
+      - memsize_kbytes: '32768'
+      - portSize: 'kSEMC_PortSize16Bit'
+      - burstLen: 'kSEMC_Sdram_BurstLen8'
+      - columnAddrBitNum: 'kSEMC_SdramColunm_9bit'
+      - casLatency: 'kSEMC_LatencyThree'
+      - tPrecharge2Act_Ns: '18'
+      - tAct2ReadWrite_Ns: '18'
+      - tRefreshRecovery_Ns: '127'
+      - tWriteRecovery_Ns: '12'
+      - tCkeOff_Ns: '42'
+      - tAct2Prechage_Ns: '42'
+      - tSelfRefRecovery_Ns: '67'
+      - tRefresh2Refresh_Ns: '60'
+      - tAct2Act_Ns: '60'
+      - tPrescalePeriod_Ns: '160'
+      - tIdleTimeout_Ns: '0'
+      - refreshPeriod_nsPerRow: '64'
+      - refreshUrgThreshold: '64'
+      - refreshBurstLen: '1'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+semc_config_t SEMC_config = {
+  .dqsMode = kSEMC_Loopbackinternal,
+  .cmdTimeoutCycles = 0,
+  .busTimeoutCycles = 0x1F,
+  .queueWeight = {
+    .queueaWeight = {
+      .queueaConfig = {
+        .qos = 0,
+        .aging = 0,
+        .slaveHitSwith = 0,
+        .slaveHitNoswitch = 0
+      },
+      .queueaValue = 0
+    },
+    .queuebWeight = {
+      .queuebConfig = {
+        .qos = 0,
+        .aging = 0,
+        .slaveHitSwith = 0,
+        .weightPagehit = 0,
+        .bankRotation = 0
+      },
+      .queuebValue = 0
+    }
+  }
+};
+semc_sdram_config_t SEMC_sdram_struct = {
+  .csxPinMux = kSEMC_MUXCSX0,
+  .address = 0x80000000,
+  .memsize_kbytes = 32768,
+  .portSize = kSEMC_PortSize16Bit,
+  .burstLen = kSEMC_Sdram_BurstLen8,
+  .columnAddrBitNum = kSEMC_SdramColunm_9bit,
+  .casLatency = kSEMC_LatencyThree,
+  .tPrecharge2Act_Ns = 18,
+  .tAct2ReadWrite_Ns = 18,
+  .tRefreshRecovery_Ns = 127,
+  .tWriteRecovery_Ns = 12,
+  .tCkeOff_Ns = 42,
+  .tAct2Prechage_Ns = 42,
+  .tSelfRefRecovery_Ns = 67,
+  .tRefresh2Refresh_Ns = 60,
+  .tAct2Act_Ns = 60,
+  .tPrescalePeriod_Ns = 160,
+  .tIdleTimeout_Ns = 0,
+  .refreshPeriod_nsPerRow = 64,
+  .refreshUrgThreshold = 64,
+  .refreshBurstLen = 1
+};
+
+void SEMC_init(void) {
+  /* Initialize SEMC peripheral. */
+  SEMC_Init(SEMC_PERIPHERAL, &SEMC_config);
+  /* Initialize SEMC SDRAM. */
+  SEMC_ConfigureSDRAM(SEMC_PERIPHERAL, kSEMC_SDRAM_CS0, &SEMC_sdram_struct, 160000000);
+}
+
+/***********************************************************************************************************************
  * TEMPMON initialization code
  **********************************************************************************************************************/
 /* clang-format off */
@@ -62,8 +183,8 @@ instance:
         - clockSource: 'LowFreqClock'
         - clockSourceFreq: 'BOARD_BootClockRUN'
       - frequencySet: '1s'
-      - lowAlarmTemp: '39'
-      - highAlarmTemp: '40'
+      - lowAlarmTemp: '40'
+      - highAlarmTemp: '70'
       - panicAlarmTemp: '90'
     - startMeasure: 'true'
     - interruptsCfg:
@@ -83,8 +204,8 @@ instance:
 /* clang-format on */
 const tempmon_config_t TEMPMON_config = {
   .frequency = 32768,
-  .lowAlarmTemp = 39,
-  .highAlarmTemp = 40,
+  .lowAlarmTemp = 40,
+  .highAlarmTemp = 70,
   .panicAlarmTemp = 90
 };
 
@@ -219,6 +340,7 @@ void TRNG_init(void) {
 void BOARD_InitPeripherals(void)
 {
   /* Initialize components */
+  SEMC_init();
   TEMPMON_init();
   TRNG_init();
 }

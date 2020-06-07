@@ -11,6 +11,7 @@
 #include "fsl_enet.h"
 #include "fsl_iomuxc.h"
 #include "fsl_phy.h"
+#include "peripherals.h"
 #include "pin_mux.h"
 
 
@@ -18,6 +19,7 @@ __attribute__((constructor(101))) static void setupHardware() {
   BOARD_ConfigMPU();
   BOARD_InitPins();
   BOARD_BootClockRUN();
+  BOARD_InitBootPeripherals();
 
   CLOCK_EnableClock(kCLOCK_Trace);
   extern void SWO_Init();
@@ -215,8 +217,9 @@ static void enetTask(void* arg) {
 static void mainTask(void *pvParameters)
 {
   while (true) {
-    vTaskDelay(100000 / portTICK_PERIOD_MS);
-    printf("Still Alive....\n");
+    vTaskDelay(30 * configTICK_RATE_HZ);
+    float temp = TEMPMON_GetCurrentTemperature(TEMPMON);
+    printf("Still Alive. Temp: %.1f\n", temp);
   }
 }
 
@@ -224,8 +227,10 @@ int main()
 {
   puts("Programm Started...");
   printf("System clock is %lu\n", SystemCoreClock);
+  extern void mem_test();
+  mem_test();
 
-  xTaskCreate(mainTask, "main", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
+  xTaskCreate(mainTask, "main", 4 * configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
   xTaskCreate(enetTask, "enet", 2*configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 
   vTaskStartScheduler();

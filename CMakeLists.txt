@@ -92,7 +92,7 @@ SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} muldefs")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Map=output.map")
-
+SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -u _printf_float")
 
 #set(LINKER_SCRIPT "system/gcc/MIMXRT1062xxxxx_flexspi_nor.ld")
 set(LINKER_SCRIPT "device.ld")
@@ -135,8 +135,11 @@ add_executable(com.elf
   ./source/usb/usb_device_descriptor.c
   ./source/usb/virtual_com.c
 
+  ./source/temp.c
   ./source/swo.c
   ./source/main.c
+  ./source/mem_test.c
+  ./source/mem_test_runner.c
 )
 
 target_link_libraries(com.elf
