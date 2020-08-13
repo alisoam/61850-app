@@ -10,7 +10,7 @@
       <description></description>
    </common>
    <preferences>
-      <validate_boot_init_only>true</validate_boot_init_only>
+      <validate_boot_init_only>false</validate_boot_init_only>
       <generate_extended_information>false</generate_extended_information>
       <generate_code_modified_registers_only>false</generate_code_modified_registers_only>
    </preferences>
@@ -965,7 +965,7 @@
             <component name="system" uuid="0cd75da4-317c-43c7-afdc-4820c001cd07" type_id="system_54b53072540eeeb8f8e9343e71f28176">
                <config_set_global name="global_system_definitions"/>
             </component>
-            <component name="msg" uuid="08d7c41c-125c-416f-a458-ce7d5bf6690b" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
+            <component name="msg" uuid="f60d8ee7-5783-494c-8164-3112aa733859" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
                <config_set_global name="global_messages"/>
             </component>
          </components>

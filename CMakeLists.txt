@@ -100,17 +100,22 @@ set(LINKER_SCRIPT "device.ld")
 # -Xlinker --wrap=malloc -Xlinker --wrap=free
 set (CMAKE_C_LINK_EXECUTABLE "<CMAKE_LINKER> ${CMAKE_EXE_LINKER_FLAGS} -T ${CMAKE_SOURCE_DIR}/${LINKER_SCRIPT} <OBJECTS> <LINK_LIBRARIES> -o <TARGET>")
 set (CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_LINKER> ${CMAKE_EXE_LINKER_FLAGS} -T ${CMAKE_SOURCE_DIR}/${LINKER_SCRIPT} <OBJECTS> <LINK_LIBRARIES> -o <TARGET>")
-include(device.cmake)
-include(FreeRTOS.cmake)
 
 include_directories(
   ./include
   ./include/usb
+  ./include/net/lwip
+  ./include/net/emac
+  ./include/net
   ./board
   ./system/components/lan8720
   ./include/FreeRTOS
   ./modules/FreeRTOS/portable/GCC/ARM_CM4F
 )
+
+include(device.cmake)
+include(FreeRTOS.cmake)
+include(lwIP.cmake)
 
 add_executable(com.elf
   ./board/clock_config.c
@@ -129,11 +134,20 @@ add_executable(com.elf
   ./modules/FreeRTOS/portable/GCC/ARM_CM4F/port.c
   ./modules/FreeRTOS/portable/MemMang/heap_4.c
 
-  ./source/usb/usb_device_cdc_acm.c
-  ./source/usb/usb_device_ch9.c
-  ./source/usb/usb_device_class.c
-  ./source/usb/usb_device_descriptor.c
-  ./source/usb/virtual_com.c
+  #./source/usb/usb_device_cdc_acm.c
+  #./source/usb/usb_device_ch9.c
+  #./source/usb/usb_device_class.c
+  #  ./source/usb/usb_device_descriptor.c
+  #  ./source/usb/virtual_com.c
+
+  ./source/net/rb_tree.c
+  ./source/net/emac/rx.c
+  ./source/net/emac/tx.c
+  ./source/net/emac/emac.c
+  ./source/net/interface.c
+  ./source/net/netif/ethernet.c
+  ./source/net/sys_arch_freertos.c
+  ./source/net/debug.c
 
   ./source/temp.c
   ./source/swo.c
@@ -145,6 +159,7 @@ add_executable(com.elf
 target_link_libraries(com.elf
   device
   FreeRTOS
+  lwIP
 )
 
 target_include_directories(com.elf PUBLIC

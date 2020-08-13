@@ -3,7 +3,7 @@
 #include "mem_tests.h"
 
 #define DRAM_BASE_ADDRESS (uint32_t *)(0x80000000)
-#define DRAM_SIZE (32 * 1024 * 1024)
+#define DRAM_SIZE (16 * 1024 * 1024)
 #define DEBUGOUT printf
 #define DEBUGSTR printf
 

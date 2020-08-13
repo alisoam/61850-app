@@ -1,6 +1,12 @@
 [submodule "modules/FreeRTOS"]
 	path = modules/FreeRTOS
 	url = https://github.com/FreeRTOS/FreeRTOS-Kernel
+	shallow = true
 [submodule "modules/cmsis"]
 	path = modules/cmsis
 	url = https://github.com/ARM-software/CMSIS_5
+	shallow = true
+[submodule "modules/lwip"]
+	path = modules/lwip
+	url = https://git.savannah.nongnu.org/git/lwip.git
+	shallow = true

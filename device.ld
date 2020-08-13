@@ -28,16 +28,17 @@
 /* Entry Point */
 ENTRY(Reset_Handler)
 
-HEAP_SIZE  = DEFINED(__heap_size__)  ? __heap_size__  : 0x4000;
 STACK_SIZE = DEFINED(__stack_size__) ? __stack_size__ : 0x0400;
+HEAP_SIZE  = DEFINED(__heap_size__)  ? __heap_size__  : 0x01000000;
 
 /* Specify the memory areas */
 MEMORY
 {
   m_interrupts          (RX)  : ORIGIN = 0x00000000, LENGTH = 0x00000400
-  m_text                (RX)  : ORIGIN = 0x00000400, LENGTH = 0x0001FC00
-  m_data                (RW)  : ORIGIN = 0x20000000, LENGTH = 0x00020000
-  m_data2               (RW)  : ORIGIN = 0x20200000, LENGTH = 0x000C0000
+  m_text                (RX)  : ORIGIN = 0x00000400, LENGTH = 0x0003FC00
+  m_data                (RW)  : ORIGIN = 0x20000000, LENGTH = 0x00040000
+  m_data2               (RW)  : ORIGIN = 0x20200000, LENGTH = 0x00080000
+  m_sdram               (RW)  : ORIGIN = 0x80000000, LENGTH = 0x02000000
 }
 
 /* Define output sections */
@@ -195,20 +196,10 @@ SECTIONS
     __END_BSS = .;
   } > m_data
 
-  .heap :
-  {
-    . = ALIGN(8);
-    __end__ = .;
-    PROVIDE(end = .);
-    __HeapBase = .;
-    . += HEAP_SIZE;
-    __HeapLimit = .;
-    __heap_limit = .; /* Add for _sbrk */
-  } > m_data
-
   .stack :
   {
     . = ALIGN(8);
+    __end__ = .;
     . += STACK_SIZE;
   } > m_data
 
@@ -219,6 +210,15 @@ SECTIONS
 
   .ARM.attributes 0 : { *(.ARM.attributes) }
 
-  ASSERT(__StackLimit >= __HeapLimit, "region m_data overflowed with stack and heap")
+  .heap :
+  {
+    . = ALIGN(8);
+    PROVIDE(end = .);
+    __HeapBase = .;
+    . += HEAP_SIZE;
+    __HeapLimit = .;
+    __heap_limit = .; /* Add for _sbrk */
+  } > m_sdram
+
 }
 
