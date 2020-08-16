@@ -295,10 +295,23 @@ __isr_vector:
     .type    Reset_Handler, %function
 Reset_Handler:
     cpsid   i               /* Mask interrupts */
+
+  	.equ    GPR17, 0x400AC044
+		.equ    GPR17_VAL, 0xaaaaffff
+    ldr     r0, =GPR17
+    ldr     r1, =GPR17_VAL
+    str     r1, [r0]
+    .equ    GPR16, 0x400AC040
+    ldr     r0, =GPR16
+    ldr     r1, [r0]
+    orr 		r1, r1, #0x4
+    str     r1, [r0]
+
     .equ    VTOR, 0xE000ED08
     ldr     r0, =VTOR
     ldr     r1, =__isr_vector
     str     r1, [r0]
+
     ldr     r2, [r1]
     msr     msp, r2
 #ifndef __NO_SYSTEM_INIT

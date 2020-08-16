@@ -13,6 +13,7 @@
 
 /*! @brief Defines the timeout macro. */
 #define PHY_TIMEOUT_COUNT 200
+#define PHY_MII_TIMEOUT_COUNT 5
 
 /*******************************************************************************
  * Prototypes
@@ -273,8 +274,6 @@ status_t PHY_Init(struct PhyState* state, ENET_Type *base, uint32_t phy_addr, ui
   return kStatus_Success;
 }
 
-
-// FIXME add timeout
 /* Phy status update state machine */
 uint32_t lpcPHYStsPoll(struct PhyState* state) {
   switch (state->phyustate) {
@@ -285,6 +284,7 @@ uint32_t lpcPHYStsPoll(struct PhyState* state) {
       state->physts &= ~PHY_LINK_CHANGED;
       state->physts = state->physts | PHY_LINK_BUSY;
       state->phyustate = 1;
+      state->timeout_counter = PHY_MII_TIMEOUT_COUNT;
       break;
 
     case 1:
@@ -294,6 +294,7 @@ uint32_t lpcPHYStsPoll(struct PhyState* state) {
         state->sts = ENET_ReadSMIData(state->base);
         ENET_StartSMIRead(state->base, state->phy_addr, LAN8_PHYSPLCTL_REG, kENET_MiiReadValidFrame);
         state->phyustate = 2;
+        state->timeout_counter = PHY_MII_TIMEOUT_COUNT;
       }
       break;
 
@@ -308,6 +309,11 @@ uint32_t lpcPHYStsPoll(struct PhyState* state) {
       }
       break;
   }
+
+  if (state->timeout_counter > 0)
+    state->timeout_counter -= 1;
+  else if (state->phyustate != 0)
+    state->phyustate = 0;
 
   return state->physts;
 }

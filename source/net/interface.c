@@ -7,30 +7,35 @@
 #include "emac/emac.h"
 #include "netif/ethernet.h"
 
-emac_data_t emac __attribute__ ((section (".fast_bss"))) __attribute__((aligned(4)));
+emac_data_t emac __attribute__((section (".fast_bss"))) __attribute__((aligned(64)));
 
-char lwip_heap[MEM_SIZE] __attribute__ ((section (".m_ocram2"))) __attribute__((aligned(64)));
+char lwip_heap[MEM_SIZE] __attribute__((section (".m_ocram2"))) __attribute__((aligned(64)));
+
+int counter = 0;// FIXME remove this line
 
 void enet_handler(port_data_t* port) {
   signed portBASE_TYPE xRecTaskWoken = pdFALSE, XTXTaskWoken = pdFALSE;
-  uint32_t ints = port->enet->EIR;
-  printf("IRQ EIR: %0x\n", ints);
-  if (ints & (ENET_EIR_RXB_MASK | ENET_EIR_RXF_MASK))
-    xSemaphoreGiveFromISR(port->rx_sem, &xRecTaskWoken);
-  if (ints & ENET_EIR_TXF_MASK)
-    xSemaphoreGiveFromISR(port->tx_clean_sem, &XTXTaskWoken);
+  ENET_Type* enet = port->enet;
+  uint32_t ints = enet->EIR;
 
-  port->enet->EIR &= ~(ints & (ENET_EIR_RXB_MASK | ENET_EIR_RXF_MASK | ENET_EIR_TXF_MASK));
+  if (ints & (ENET_EIR_RXF_MASK | ENET_EIR_RXB_MASK))
+    xSemaphoreGiveFromISR(port->rx_sem, &xRecTaskWoken);
+
+  if (ints & (ENET_EIR_TXF_MASK | ENET_EIR_TXB_MASK)) {
+    xSemaphoreGiveFromISR(port->tx_clean_sem, &XTXTaskWoken);
+    counter++;
+	}
+
+  enet->EIR |= (ints & (ENET_EIR_RXF_MASK | ENET_EIR_RXB_MASK |
+                               ENET_EIR_TXF_MASK | ENET_EIR_TXB_MASK));
   portEND_SWITCHING_ISR(xRecTaskWoken || XTXTaskWoken); 
 }
 
 void ENET_IRQHandler() {
-  printf("port 0 IRQ: \n");
   enet_handler(emac.port + 0);
 }
 
 void ENET2_IRQHandler() {
-  printf("port 1 IRQ: \n");
   enet_handler(emac.port + 1);
 }
 
@@ -88,7 +93,7 @@ err_t interface_init(struct netif *netif)
   }
 
 #if LWIP_NETIF_HOSTNAM
-  netif->hostname = "lwipmy_soc";
+  netif->hostname = "com";
 #endif
 
   netif->name[0] = 'e';

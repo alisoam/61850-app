@@ -5,13 +5,14 @@
 #include "emac/rx.h"
 #include "emac/tx.h"
 
-const uint32_t tx_priority_num[] = {8, 4};
+static void port_init(port_data_t* port, const uint8_t* mac_addr) {
+  ENET_Type* enet = port->enet;
 
-static void port_init(ENET_Type* enet, const uint8_t* mac_addr, uint32_t rx_desc, uint32_t tx_desc) {
   enet->ECR |= ENET_ECR_RESET_MASK;
 
-  enet->EIMR |= ENET_EIMR_RXB_MASK; // FIXME | ENET_EIMR_TXB_MASK;
-//                ENET_EIMR_BABR_MASK | ENET_EIMR_BABT_MASK |
+  enet->EIMR |= ENET_EIMR_RXF_MASK | //ENET_EIMR_RXB_MASK |
+                  ENET_EIMR_TXF_MASK;// | ENET_EIMR_TXB_MASK;
+//                ENET_EIMR_BABR_MASK | ENET_EIMR_BABT_MASK | 
 //                ENET_EIMR_EBERR_MASK | ENET_EIMR_LC_MASK |
 //                ENET_EIMR_RL_MASK | ENET_EIMR_UN_MASK |
 //                ENET_EIMR_PLR_MASK;
@@ -20,15 +21,17 @@ static void port_init(ENET_Type* enet, const uint8_t* mac_addr, uint32_t rx_desc
   enet->RCR &= ~(ENET_RCR_LOOP_MASK);
   enet->TCR |= ENET_TCR_ADDINS_MASK;
 
-	uint32_t l_addr = ((uint32_t)mac_addr[3] << 24) | ((uint32_t)mac_addr[2] << 16) | ((uint32_t)mac_addr[1] << 8) | ((uint32_t)mac_addr[0]);
-  uint32_t u_addr = ((uint32_t)mac_addr[5] << 8) | ((uint32_t)mac_addr[4]);
-	enet->PALR = l_addr;
+  uint32_t l_addr = ((uint32_t)mac_addr[0] << 24) | ((uint32_t)mac_addr[1] << 16) | ((uint32_t)mac_addr[2] << 8) | ((uint32_t)mac_addr[3]);
+  uint32_t u_addr = ((uint32_t)mac_addr[4] << 24) | ((uint32_t)mac_addr[5] << 16);
+  enet->PALR = l_addr;
   enet->PAUR = u_addr;
 
 //  enet->TFWR |= ENET_TFWR_STRFWD_MASK | 0x1U;
 
-  enet->RDSR = rx_desc;
-  enet->TDSR = tx_desc;
+  rx_desc_init(port->rx_desc, RX_DESC_COUNT);
+  enet->RDSR = (uint32_t)port->rx_desc;
+  tx_desc_init(port->tx_desc, TX_DESC_COUNT);
+  enet->TDSR = (uint32_t)port->tx_desc;;
 
   enet->MRBR |= ENET_MRBR_R_BUF_SIZE(RX_DESC_SIZE);
 
@@ -44,20 +47,20 @@ static void port_init(ENET_Type* enet, const uint8_t* mac_addr, uint32_t rx_desc
   enet->TACC |= 0;
   enet->RACC |= ENET_RACC_LINEDIS_MASK;
 
-  enet->ECR |= ENET_ECR_DBSWP_MASK | ENET_ECR_EN1588_MASK | ENET_ECR_ETHEREN_MASK;
+  enet->ECR |= ENET_ECR_DBSWP_MASK /*| ENET_ECR_EN1588_MASK */| ENET_ECR_ETHEREN_MASK;
 }
 
 static err_t emac_low_level_init(emac_data_t* emac, const uint8_t* hwaddr) {
-  err_t err = emac_rx_init(emac);
-  if (err != ERR_OK)
-    return err;
-//  err = emac_tx_init(emac); FIXME
-//  if (err != ERR_OK)
-//    return err;
+  err_t err;
   for (u32_t i = 0; i < PORT_COUNT; i++) {
     port_data_t* port = (emac->port + i);
-    ENET_Type* enet = port->enet;
-    port_init(enet, hwaddr, (uint32_t)port->rx_desc, (uint32_t)port->tx_desc);
+    port_init(port, hwaddr);
+    err = port_rx_init(port);
+    if (err != ERR_OK)
+      return err;
+    err = port_tx_init(port);
+    if (err != ERR_OK)
+      return err;
   }
   return ERR_OK;
 }
@@ -75,34 +78,18 @@ err_t emac_init(emac_data_t* emac, const uint8_t* hwaddr, recv_callback_t recv_c
   emac->rx_queue_set = xQueueCreateSet(PORT_COUNT);
   LWIP_ASSERT("rx_queue_set creation error", (emac->rx_queue_set != NULL));
 
-  emac->tx_queue_set = xQueueCreateSet(TX_QUEUE_COUNT * TX_QUEUE_SIZE + PORT_COUNT);
-  LWIP_ASSERT("tx_queue_set creation error", (emac->tx_queue_set != NULL));
-
   for (u32_t i = 0; i < PORT_COUNT; i++) {
     port_data_t* port = emac->port + i;
 
     port->rx_sem = xSemaphoreCreateBinary();
     LWIP_ASSERT("rx_sem creation error", (port->rx_sem!= NULL));
     xQueueAddToSet(port->rx_sem, emac->rx_queue_set);
-
-    port->tx_clean_sem = xSemaphoreCreateBinary();
-    LWIP_ASSERT("tx_clean_sem creation error", (port->tx_clean_sem!= NULL));
-    xQueueAddToSet(port->tx_clean_sem, emac->tx_queue_set);
-
-    port->tx_packet_sem = xSemaphoreCreateCounting(TX_PKT_COUNT, TX_PKT_COUNT);
-    LWIP_ASSERT("tx_packet_sem creation error", (port->tx_packet_sem != NULL));
   }
 
-
-  for (u32_t i = 0; i < TX_QUEUE_COUNT; i++) {
-    emac->tx_priority_queue[i] = xQueueCreate(tx_priority_num[i], sizeof(send_data_t));
-    LWIP_ASSERT("tx_priority_queue creation error", (emac->tx_priority_queue[i] != NULL));
-
-    xQueueAddToSet(emac->tx_priority_queue[i], emac->tx_queue_set);
-  }
 
   sys_thread_new("rx_thread", rxTask, emac, DEFAULT_THREAD_STACKSIZE, tskRECPKT_PRIORITY);
-  sys_thread_new("tx_thread", txTask, emac, DEFAULT_THREAD_STACKSIZE, tskTX_PRIORITY);
+
+  emac_tx_init(emac);
 
   return ERR_OK;
 }

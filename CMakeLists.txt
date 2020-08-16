@@ -143,6 +143,7 @@ add_executable(com.elf
   ./source/net/rb_tree.c
   ./source/net/emac/rx.c
   ./source/net/emac/tx.c
+  ./source/net/emac/input.c
   ./source/net/emac/emac.c
   ./source/net/interface.c
   ./source/net/netif/ethernet.c
@@ -151,6 +152,7 @@ add_executable(com.elf
 
   ./source/temp.c
   ./source/swo.c
+  ./source/enet.c
   ./source/main.c
   ./source/mem_test.c
   ./source/mem_test_runner.c

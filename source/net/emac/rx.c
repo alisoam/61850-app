@@ -2,10 +2,10 @@
 
 #include <string.h>
 
-static void rx_desc_init(enet_rx_bd_struct_t* desc, size_t count) {
+void rx_desc_init(enet_rx_bd_struct_t* desc, size_t count) {
   memset(desc, 0, count * sizeof(enet_tx_bd_struct_t));
-  for (unsigned int i = 0; i < count; i++)
-    desc[count].controlExtend1 |= ENET_BUFFDESCRIPTOR_RX_INTERRUPT_MASK;
+//  for (unsigned int i = 0; i < count; i++)
+//    desc[count].controlExtend1 |= ENET_BUFFDESCRIPTOR_RX_INTERRUPT_MASK;
   desc[count - 1].control |= ENET_BUFFDESCRIPTOR_RX_WRAP_MASK;
 }
 
@@ -64,8 +64,6 @@ static void port_rx_queue_all(port_data_t *port) {
 
 /* Sets up the RX descriptor ring buffers. */
 err_t port_rx_init(port_data_t* port) {
-  rx_desc_init(port->rx_desc, RX_DESC_COUNT);
-
   port->rx_free_descs = RX_DESC_COUNT;
   port->rx_next_desc = 0;
   memset(port->rx_pbuf, 0, sizeof(port->rx_pbuf));
@@ -100,7 +98,7 @@ static void port_check_input(emac_data_t* emac, unsigned int port_index) {
   port_data_t* port = &emac->port[port_index];
   if (xSemaphoreTake(port->rx_sem, 0) != pdTRUE)
     return;
-  printf("recv on port %d\n", port_index);
+//  printf("recv on port %d\n", port_index);
 
   ENET_Type* enet = port->enet;
 
@@ -109,12 +107,12 @@ static void port_check_input(emac_data_t* emac, unsigned int port_index) {
     enet_rx_bd_struct_t* desc = &(port->rx_desc[idx]);
     uint32_t control = desc->control;
 
-    if (control | ENET_BUFFDESCRIPTOR_RX_EMPTY_MASK) {
-      break;
+    if (control & ENET_BUFFDESCRIPTOR_RX_EMPTY_MASK) {
+      break; // FIXME tdar	
     }
 
-    // overrun
-    if (control | ENET_BUFFDESCRIPTOR_RX_OVERRUN_MASK) {
+    // overrun	
+    if (control & ENET_BUFFDESCRIPTOR_RX_OVERRUN_MASK) {
       return;
     }
 
@@ -122,15 +120,15 @@ static void port_check_input(emac_data_t* emac, unsigned int port_index) {
     struct pbuf* p = port->rx_pbuf[idx];
 
     /* Handle errors */
-    bool error = control | ENET_BUFFDESCRIPTOR_RX_LENVLIOLATE_MASK | ENET_BUFFDESCRIPTOR_RX_NOOCTET_MASK |
-      ENET_BUFFDESCRIPTOR_RX_CRC_MASK | ENET_BUFFDESCRIPTOR_RX_TRUNC_MASK;
+    bool error = control & (ENET_BUFFDESCRIPTOR_RX_LENVLIOLATE_MASK | ENET_BUFFDESCRIPTOR_RX_NOOCTET_MASK |
+                            ENET_BUFFDESCRIPTOR_RX_CRC_MASK | ENET_BUFFDESCRIPTOR_RX_TRUNC_MASK);
     if (error) {
       port_rx_queue_pbuf(port, p);
       LWIP_DEBUGF(EMAC_DEBUG | LWIP_DBG_TRACE, ("port_low_level_input: Packet dropped\n"));
     }
     else {
       /* A packet is waiting, get length */
-      uint32_t length = desc->length - (control | ENET_BUFFDESCRIPTOR_RX_LAST_MASK? 4: 0);  /* Remove FCS */
+      uint32_t length = desc->length - ((control & ENET_BUFFDESCRIPTOR_RX_LAST_MASK)? 4: 0);  /* Remove FCS */
 
       /* Zero-copy */
       p->len = (uint16_t) length;

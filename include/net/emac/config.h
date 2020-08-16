@@ -23,7 +23,7 @@ extern "C"
 #define TX_PKT_COUNT      4
 #define TX_DESC_SIZE      1600
 #define TX_DESC_PER_PKT   1
-#define TX_DESC_COUNT     (TX_PKT_COUNT * TX_DESC_PER_PKT)
+#define TX_DESC_COUNT     (TX_PKT_COUNT * TX_DESC_PER_PKT + 2 * TX_PKT_COUNT)
 #define TX_PKT_SIZE       (TX_DESC_SIZE * TX_DESC_PER_PKT)
 
 

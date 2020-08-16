@@ -155,36 +155,13 @@ err_t
 ethernet_output(struct netif * netif, struct pbuf * p,
                 const struct eth_addr * src, const struct eth_addr * dst,
                 u16_t eth_type) {
-  struct eth_hdr *ethhdr;
-  u16_t eth_type_be = lwip_htons(eth_type);
-
-#if ETHARP_SUPPORT_VLAN && defined(LWIP_HOOK_VLAN_SET)
-  s32_t vlan_prio_vid = LWIP_HOOK_VLAN_SET(netif, p, src, dst, eth_type);
-  if (vlan_prio_vid >= 0) {
-    struct eth_vlan_hdr *vlanhdr;
-
-    LWIP_ASSERT("prio_vid must be <= 0xFFFF", vlan_prio_vid <= 0xFFFF);
-
-    if (pbuf_add_header(p, SIZEOF_ETH_HDR + SIZEOF_VLAN_HDR) != 0) {
-      goto pbuf_header_failed;
-    }
-    vlanhdr = (struct eth_vlan_hdr *)(((u8_t *)p->payload) + SIZEOF_ETH_HDR);
-    vlanhdr->tpid     = eth_type_be;
-    vlanhdr->prio_vid = lwip_htons((u16_t)vlan_prio_vid);
-
-    eth_type_be = PP_HTONS(ETHTYPE_VLAN);
-  } else
-#endif /* ETHARP_SUPPORT_VLAN && defined(LWIP_HOOK_VLAN_SET) */
   LWIP_ASSERT_CORE_LOCKED();
 
-  LWIP_ASSERT("netif->hwaddr_len must be 6 for ethernet_output!",
-              (netif->hwaddr_len == ETH_HWADDR_LEN));
-  LWIP_ASSERT("netif->hwaddr is not equale src!",
-              (memcmp(netif->hwaddr, src, ETH_HWADDR_LEN) == 0));
   LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE,
               ("ethernet_output: sending packet %p\n", (void *)p));
 
   emac_data_t* emac = (emac_data_t*)netif->state;
+  uint16_t eth_type_be = lwip_htons(eth_type);
   send_with_priority(emac, dst->addr, eth_type_be, p, 1);
   return ERR_OK;
 

@@ -43,6 +43,7 @@ struct PhyState {
   uint32_t physts;
   uint32_t olddphysts;
   uint32_t sts;
+  uint32_t timeout_counter;
 };
 
 #if defined(__cplusplus)
