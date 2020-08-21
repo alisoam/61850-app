@@ -94,8 +94,7 @@ SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Map=output.map")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -u _printf_float")
 
-#set(LINKER_SCRIPT "system/gcc/MIMXRT1062xxxxx_flexspi_nor.ld")
-set(LINKER_SCRIPT "device.ld")
+set(LINKER_SCRIPT "system/device.ld")
 
 # -Xlinker --wrap=malloc -Xlinker --wrap=free
 set (CMAKE_C_LINK_EXECUTABLE "<CMAKE_LINKER> ${CMAKE_EXE_LINKER_FLAGS} -T ${CMAKE_SOURCE_DIR}/${LINKER_SCRIPT} <OBJECTS> <LINK_LIBRARIES> -o <TARGET>")
@@ -154,8 +153,6 @@ add_executable(com.elf
   ./source/swo.c
   ./source/enet.c
   ./source/main.c
-  ./source/mem_test.c
-  ./source/mem_test_runner.c
 )
 
 target_link_libraries(com.elf
@@ -168,7 +165,7 @@ target_include_directories(com.elf PUBLIC
 )
 
 set_target_properties(${TARGET_NAME} PROPERTIES LINK_DEPENDS
-  ${CMAKE_SOURCE_DIR}/${LINKER_SCRIPT}
+  ${LINKER_SCRIPT}
 )
 
 set_property(SOURCE ./system/gcc/startup_MIMXRT1062.S PROPERTY LANGUAGE C)
