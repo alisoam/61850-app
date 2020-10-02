@@ -5,6 +5,8 @@ set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 
 project (com)
 
+add_compile_definitions(XIP_EXTERNAL_FLASH=1)
+
 set(CMAKE_CXX_COMPILER /home/ali/.local/bin/arm-none-eabi-g++)
 set(CMAKE_C_COMPILER /home/ali/.local/bin/arm-none-eabi-gcc)
 set(CMAKE_AR /home/ali/.local/bin/arm-none-eabi-ar)
@@ -97,8 +99,8 @@ SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -u _printf_float")
 set(LINKER_SCRIPT "system/device.ld")
 
 # -Xlinker --wrap=malloc -Xlinker --wrap=free
-set (CMAKE_C_LINK_EXECUTABLE "<CMAKE_LINKER> ${CMAKE_EXE_LINKER_FLAGS} -T ${CMAKE_SOURCE_DIR}/${LINKER_SCRIPT} <OBJECTS> <LINK_LIBRARIES> -o <TARGET>")
-set (CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_LINKER> ${CMAKE_EXE_LINKER_FLAGS} -T ${CMAKE_SOURCE_DIR}/${LINKER_SCRIPT} <OBJECTS> <LINK_LIBRARIES> -o <TARGET>")
+set (CMAKE_C_LINK_EXECUTABLE "<CMAKE_LINKER> ${CMAKE_EXE_LINKER_FLAGS} -T ${CMAKE_SOURCE_DIR}/${LINKER_SCRIPT} <OBJECTS> <LINK_LIBRARIES> -lm -o <TARGET>")
+set (CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_LINKER> ${CMAKE_EXE_LINKER_FLAGS} -T ${CMAKE_SOURCE_DIR}/${LINKER_SCRIPT} <OBJECTS> <LINK_LIBRARIES> -lm -o <TARGET>")
 
 include_directories(
   ./include
@@ -106,6 +108,7 @@ include_directories(
   ./include/net/lwip
   ./include/net/emac
   ./include/net
+  ./include/libiec61850
   ./board
   ./system/components/lan8720
   ./include/FreeRTOS
@@ -115,6 +118,7 @@ include_directories(
 include(device.cmake)
 include(FreeRTOS.cmake)
 include(lwIP.cmake)
+#include(lib_iec61850.cmake)
 
 add_executable(com.elf
   ./board/clock_config.c
@@ -122,16 +126,15 @@ add_executable(com.elf
   ./board/pin_mux.c
   ./board/board.c
 
-  ./system/gcc/startup_MIMXRT1062.S
+  ./system/startup.S
   ./system/syscalls.c
-  ./system/utils/fsl_sbrk.c
-  ./system/fault_handlers.c
+  ./system/handlers.c
   ./system/components/lan8720/fsl_phy.c
 
   #./source/FreeRTOS/freertos_heap.c
-  ./source/FreeRTOS/freertos_hooks.c
-  ./modules/FreeRTOS/portable/GCC/ARM_CM4F/port.c
-  ./modules/FreeRTOS/portable/MemMang/heap_4.c
+    ./source/FreeRTOS/freertos_hooks.c
+    ./modules/FreeRTOS/portable/GCC/ARM_CM4F/port.c
+    ./modules/FreeRTOS/portable/MemMang/heap_4.c
 
   #./source/usb/usb_device_cdc_acm.c
   #./source/usb/usb_device_ch9.c
@@ -139,36 +142,47 @@ add_executable(com.elf
   #  ./source/usb/usb_device_descriptor.c
   #  ./source/usb/virtual_com.c
 
-  ./source/net/rb_tree.c
-  ./source/net/emac/rx.c
-  ./source/net/emac/tx.c
-  ./source/net/emac/input.c
-  ./source/net/emac/emac.c
-  ./source/net/interface.c
-  ./source/net/netif/ethernet.c
-  ./source/net/sys_arch_freertos.c
-  ./source/net/debug.c
+  #  ./source/net/rb_tree.c
+  #  ./source/net/emac/rx.c
+  #  ./source/net/emac/tx.c
+  #  ./source/net/emac/input.c
+  #  ./source/net/emac/emac.c
+  #  ./source/net/interface.c
+  #  ./source/net/netif/ethernet.c
+  #  ./source/net/sys_arch_freertos.c
+  #  ./source/net/debug.c
 
-  ./source/temp.c
+  #  ./source/libiec61850/hal/time.c
+  #  ./source/libiec61850/hal/lib_memory.c
+  #  ./source/libiec61850/hal/socket.c
+  #  ./source/libiec61850/hal/thread.c
+#  ./source/libiec61850/hal/ethernet.c
+#  ./source/libiec61850/hal/tls.c
+#  ./source/libiec61850/hal/file_provider.c
+
+#  ./source/example1/server.c
+#  ./source/example1/static_model.c
+
+  #  ./source/temp.c
   ./source/swo.c
-  ./source/enet.c
+  #  ./source/enet.c
   ./source/main.c
 )
 
 target_link_libraries(com.elf
   device
   FreeRTOS
-  lwIP
+  #  lwIP
+  #  iec61850_client
+  #  iec61850_server
 )
 
 target_include_directories(com.elf PUBLIC
 )
 
-set_target_properties(${TARGET_NAME} PROPERTIES LINK_DEPENDS
-  ${LINKER_SCRIPT}
-)
+set_target_properties(com.elf PROPERTIES LINK_DEPENDS ${CMAKE_SOURCE_DIR}/${LINKER_SCRIPT})
 
-set_property(SOURCE ./system/gcc/startup_MIMXRT1062.S PROPERTY LANGUAGE C)
+set_property(SOURCE ./system/startup.S PROPERTY LANGUAGE C)
 
 add_custom_command(TARGET ${PROJECT_NAME}.elf
   POST_BUILD

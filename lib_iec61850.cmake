@@ -1,0 +1,220 @@
+
+add_library(iec61850_common STATIC
+  ./modules/libiec61850/src/common/string_map.c
+  ./modules/libiec61850/src/common/map.c
+  ./modules/libiec61850/src/common/linked_list.c
+  ./modules/libiec61850/src/common/byte_buffer.c
+  ./modules/libiec61850/src/common/string_utilities.c
+  ./modules/libiec61850/src/common/buffer_chain.c
+  ./modules/libiec61850/src/common/conversions.c
+  ./modules/libiec61850/src/common/mem_alloc_linked_list.c
+  ./modules/libiec61850/src/common/simple_allocator.c
+
+  ./modules/libiec61850/src/iec61850/common/iec61850_common.c
+)
+
+add_library(iec61850_client STATIC
+  ./modules/libiec61850/src/iec61850/client/client_control.c
+  ./modules/libiec61850/src/iec61850/client/client_report_control.c
+  ./modules/libiec61850/src/iec61850/client/client_goose_control.c
+  ./modules/libiec61850/src/iec61850/client/client_sv_control.c
+  ./modules/libiec61850/src/iec61850/client/client_report.c
+  ./modules/libiec61850/src/iec61850/client/ied_connection.c
+)
+
+add_library(iec61850_server STATIC
+  ./modules/libiec61850/src/iec61850/server/impl/ied_server.c
+  ./modules/libiec61850/src/iec61850/server/impl/ied_server_config.c
+  ./modules/libiec61850/src/iec61850/server/impl/client_connection.c
+  ./modules/libiec61850/src/iec61850/server/model/model.c
+  ./modules/libiec61850/src/iec61850/server/model/dynamic_model.c
+  ./modules/libiec61850/src/iec61850/server/model/cdc.c
+  ./modules/libiec61850/src/iec61850/server/model/config_file_parser.c
+  ./modules/libiec61850/src/iec61850/server/mms_mapping/control.c
+  ./modules/libiec61850/src/iec61850/server/mms_mapping/mms_mapping.c
+  ./modules/libiec61850/src/iec61850/server/mms_mapping/reporting.c
+  ./modules/libiec61850/src/iec61850/server/mms_mapping/mms_goose.c
+  ./modules/libiec61850/src/iec61850/server/mms_mapping/mms_sv.c
+  ./modules/libiec61850/src/iec61850/server/mms_mapping/logging.c
+)
+
+#add_library(iec61850_logging STATIC
+#./logging/log_storage.c
+#)
+
+
+add_library(iec61850_mms STATIC
+  ./modules/libiec61850/src/mms/iso_server/iso_connection.c
+  ./modules/libiec61850/src/mms/iso_server/iso_server.c
+  ./modules/libiec61850/src/mms/iso_acse/acse.c
+  ./modules/libiec61850/src/mms/iso_mms/common/mms_type_spec.c
+  ./modules/libiec61850/src/mms/iso_mms/common/mms_value.c
+  ./modules/libiec61850/src/mms/iso_mms/common/mms_common_msg.c
+  ./modules/libiec61850/src/mms/iso_mms/client/mms_client_initiate.c
+  ./modules/libiec61850/src/mms/iso_mms/client/mms_client_write.c
+  ./modules/libiec61850/src/mms/iso_mms/client/mms_client_identify.c
+  ./modules/libiec61850/src/mms/iso_mms/client/mms_client_status.c
+  ./modules/libiec61850/src/mms/iso_mms/client/mms_client_named_variable_list.c
+  ./modules/libiec61850/src/mms/iso_mms/client/mms_client_connection.c
+  ./modules/libiec61850/src/mms/iso_mms/client/mms_client_files.c
+  ./modules/libiec61850/src/mms/iso_mms/client/mms_client_get_namelist.c
+  ./modules/libiec61850/src/mms/iso_mms/client/mms_client_get_var_access.c
+  ./modules/libiec61850/src/mms/iso_mms/client/mms_client_common.c
+  ./modules/libiec61850/src/mms/iso_mms/client/mms_client_read.c
+  ./modules/libiec61850/src/mms/iso_mms/client/mms_client_journals.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_read_service.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_file_service.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_association_service.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_identify_service.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_status_service.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_named_variable_list_service.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_value_cache.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_get_namelist_service.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_access_result.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_server.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_server_common.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_named_variable_list.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_domain.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_device.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_information_report.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_journal.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_journal_service.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_server_connection.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_write_service.c
+  ./modules/libiec61850/src/mms/iso_mms/server/mms_get_var_access_service.c
+  ./modules/libiec61850/src/mms/iso_cotp/cotp.c
+  ./modules/libiec61850/src/mms/iso_presentation/iso_presentation.c
+  ./modules/libiec61850/src/mms/asn1/ber_decode.c
+  ./modules/libiec61850/src/mms/asn1/asn1_ber_primitive_value.c
+  ./modules/libiec61850/src/mms/asn1/ber_encoder.c
+  ./modules/libiec61850/src/mms/asn1/ber_integer.c
+  ./modules/libiec61850/src/mms/iso_client/iso_client_connection.c
+  ./modules/libiec61850/src/mms/iso_common/iso_connection_parameters.c
+  ./modules/libiec61850/src/mms/iso_session/iso_session.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/DataAccessError.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/DeleteNamedVariableListRequest.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/constr_SET_OF.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/MmsPdu.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/GetNamedVariableListAttributesResponse.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/BIT_STRING.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ber_tlv_tag.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/constr_SEQUENCE_OF.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/asn_SET_OF.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ReadResponse.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/InformationReport.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ConfirmedServiceRequest.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/DeleteNamedVariableListResponse.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/asn_SEQUENCE_OF.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/VariableAccessSpecification.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/GetVariableAccessAttributesRequest.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/xer_support.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ObjectName.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/NativeEnumerated.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/per_encoder.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/constr_SEQUENCE.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/GetNameListResponse.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/MMSString.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/InitiateErrorPdu.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/IndexRangeSeq.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ConfirmedErrorPDU.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/UnconfirmedService.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/UTF8String.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ServiceError.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/TimeOfDay.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/GetNameListRequest.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/asn_codecs_prim.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/Data.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ScatteredAccessDescription.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ReadRequest.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/per_decoder.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/Identifier.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ServiceSupportOptions.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/Integer8.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ConfirmedServiceResponse.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ParameterSupportOptions.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/Integer16.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ber_tlv_length.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/OCTET_STRING.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/DefineNamedVariableListRequest.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/FloatingPoint.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/xer_encoder.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/Unsigned8.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/BOOLEAN.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/INTEGER.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/UnconfirmedPDU.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/DataSequence.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/constraints.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/der_encoder.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/VisibleString.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/InitiateResponsePdu.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/StructComponent.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/Address.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/Unsigned16.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ber_decoder.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/per_support.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/WriteResponse.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/InitRequestDetail.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/InitiateRequestPdu.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/DefineNamedVariableListResponse.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/NULL.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ListOfVariableSeq.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/UtcTime.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ConcludeResponsePDU.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/AccessResult.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/Integer32.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/GetNamedVariableListAttributesRequest.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/VariableSpecification.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/Unsigned32.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/constr_CHOICE.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/AlternateAccess.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ObjectClass.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/InitResponseDetail.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ConfirmedResponsePdu.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/GetVariableAccessAttributesResponse.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/NativeInteger.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/xer_decoder.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/AlternateAccessSelection.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ConfirmedRequestPdu.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/ConcludeRequestPDU.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/WriteRequest.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/RejectPDU.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/TypeSpecification.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/constr_TYPE.c
+  ./modules/libiec61850/src/mms/iso_mms/asn1c/GeneralizedTime.c
+)
+
+include_directories(
+  ./modules/libiec61850/config
+  ./modules/libiec61850/src/common/inc
+  ./modules/libiec61850/hal/inc
+  ./modules/libiec61850/src/iec61850/inc
+
+  ./modules/libiec61850/src/mms/inc
+  ./modules/libiec61850/src/logging
+  ./modules/libiec61850/src/mms/iso_mms/asn1c
+
+  ./modules/libiec61850/src/mms/inc_private
+  ./modules/libiec61850/src/iec61850/inc_private
+)
+
+target_link_libraries(iec61850_common
+  iec61850_mms
+)
+
+target_link_libraries(iec61850_mms
+  iec61850_common
+)
+
+target_link_libraries(iec61850_server
+  iec61850_common
+  iec61850_mms
+)
+
+target_link_libraries(iec61850_client
+  iec61850_common
+  iec61850_mms
+)
+
+target_link_libraries(iec61850_common
+  lwIP
+)

@@ -1,7 +1,5 @@
 r
-h
-loadbin   com.bin, 0x60000000
-verifybin com.bin, 0x60000000
-r
-g
+loadbin   com.bin, 0x60100000
+verifybin com.bin, 0x60100000
+rnh
 exit

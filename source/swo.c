@@ -1,7 +1,7 @@
 #include "board.h"
 
 void SWO_Init() {
-  uint32_t SWOSpeed = 64000;
+  uint32_t SWOSpeed = 6000000;
   uint32_t prescaler = (BOARD_BOOTCLOCKRUN_TRACE_CLK_ROOT / SWOSpeed) - 1;
 
   CoreDebug->DEMCR = CoreDebug_DEMCR_TRCENA_Msk;

@@ -21,6 +21,20 @@ void pDelayMs(uint32_t ms) {
   vTaskDelay(ms / 5);
 }
 
+static void mainTask(void* arg) {
+  extern void iec61850Main();
+  iec61850Main();
+  
+  while(1) {
+    printf(">>>> Main Task Finished <<<<\n");
+    vTaskDelay(configTICK_RATE_HZ / 2);
+  }
+}
+
+static void systemStart() {
+  xTaskCreate(mainTask, "main Task", 2048, NULL, (tskIDLE_PRIORITY + 1UL), NULL);
+}
+
 static void setLinkUP(ENET_Type * enet, bool full_duplex, bool T100) {
   if (full_duplex) {
     enet->RCR &= ~ENET_RCR_DRT_MASK;
@@ -137,8 +151,11 @@ void enetTask(void* arg) {
   NVIC_EnableIRQ(ENET2_IRQn);
 
 
+  systemStart();
+
   while (1) {
-//    printf("counter: %d\n", counter); // FIXME
+
+    //    printf("counter: %d\n", counter); // FIXME
     bool busy = false;
     for (unsigned int i = 0; i < 2; i++) {
       uint32_t physts = lpcPHYStsPoll(&phy_state[i]);

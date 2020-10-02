@@ -16,11 +16,6 @@
 
 
 __attribute__((constructor(101))) static void setupHardware() {
-  BOARD_ConfigMPU();
-  BOARD_InitPins();
-  BOARD_BootClockRUN();
-  BOARD_InitBootPeripherals();
-
   CLOCK_EnableClock(kCLOCK_Trace);
   extern void SWO_Init();
   SWO_Init();
@@ -47,8 +42,7 @@ __attribute__((constructor(101))) static void setupHardware() {
 
 /********************************
 *********************/
-
-static void mainTask(void *pvParameters)
+static void tempTask(void *pvParameters)
 {
   while (true) {
     vTaskDelay(5 * configTICK_RATE_HZ);
@@ -62,13 +56,9 @@ int main()
   puts("Programm Started...");
   printf("System clock is %lu\n", SystemCoreClock);
 
-  extern void mem_test();
-//  mem_test();
-
-
-//  xTaskCreate(mainTask, "main", 4 * configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
-  extern void enetTask();
-  xTaskCreate(enetTask, "enet", 4*configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
+//  xTaskCreate(tempTask, "temp", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
+//  extern void enetTask();
+//  xTaskCreate(enetTask, "enet", 4*configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 
   vTaskStartScheduler();
   return 1;
