@@ -23,7 +23,7 @@ void pDelayMs(uint32_t ms) {
 
 static void mainTask(void* arg) {
   extern void iec61850Main();
-  iec61850Main();
+//  iec61850Main();
   
   while(1) {
     printf(">>>> Main Task Finished <<<<\n");

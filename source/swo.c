@@ -32,3 +32,8 @@ void SWO_Init() {
   DWT->CTRL = 0x400003FE; /* DWT_CTRL */
   TPI->FFCR = 0x00000100; /* Formatter and Flush Control Register */
 }
+
+void SWOOut(char* str) {
+  for (char* c = str; *c != NULL; c++)
+    ITM_SendChar(*c);
+}

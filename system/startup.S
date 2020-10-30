@@ -286,8 +286,6 @@ __isr_vector:
     .text
     .thumb
 
-/* Reset Handler */
-
     .thumb_func
     .align 2
     .globl   Reset_Handler

@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -40,7 +38,8 @@ void FreeRTOSDelay(uint32_t ms)
 
 void vApplicationMallocFailedHook()
 {
-  puts("Malloc Failed!\n");
+//  extern void SWOOut();
+//  SWOOut("Malloc Failed!\n");
   taskDISABLE_INTERRUPTS();
   for (;; )
     ;

@@ -132,25 +132,19 @@ add_executable(com.elf
   ./system/components/lan8720/fsl_phy.c
 
   #./source/FreeRTOS/freertos_heap.c
-    ./source/FreeRTOS/freertos_hooks.c
-    ./modules/FreeRTOS/portable/GCC/ARM_CM4F/port.c
-    ./modules/FreeRTOS/portable/MemMang/heap_4.c
+  ./source/FreeRTOS/freertos_hooks.c
+  ./modules/FreeRTOS/portable/GCC/ARM_CM4F/port.c
+  ./modules/FreeRTOS/portable/MemMang/heap_4.c
 
-  #./source/usb/usb_device_cdc_acm.c
-  #./source/usb/usb_device_ch9.c
-  #./source/usb/usb_device_class.c
-  #  ./source/usb/usb_device_descriptor.c
-  #  ./source/usb/virtual_com.c
-
-  #  ./source/net/rb_tree.c
-  #  ./source/net/emac/rx.c
-  #  ./source/net/emac/tx.c
-  #  ./source/net/emac/input.c
-  #  ./source/net/emac/emac.c
-  #  ./source/net/interface.c
-  #  ./source/net/netif/ethernet.c
-  #  ./source/net/sys_arch_freertos.c
-  #  ./source/net/debug.c
+  ./source/net/rb_tree.c
+  ./source/net/emac/rx.c
+  ./source/net/emac/tx.c
+  ./source/net/emac/input.c
+  ./source/net/emac/emac.c
+  ./source/net/interface.c
+  ./source/net/netif/ethernet.c
+  ./source/net/sys_arch_freertos.c
+  ./source/net/debug.c
 
   #  ./source/libiec61850/hal/time.c
   #  ./source/libiec61850/hal/lib_memory.c
@@ -163,16 +157,16 @@ add_executable(com.elf
 #  ./source/example1/server.c
 #  ./source/example1/static_model.c
 
-  #  ./source/temp.c
+  ./source/temp.c
   ./source/swo.c
-  #  ./source/enet.c
+  ./source/enet.c
   ./source/main.c
 )
 
 target_link_libraries(com.elf
   device
   FreeRTOS
-  #  lwIP
+  lwIP
   #  iec61850_client
   #  iec61850_server
 )

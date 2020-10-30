@@ -1,11 +1,9 @@
-/* Entry Point */
 ENTRY(Reset_Handler)
 
-HEAP_SIZE  = DEFINED(__heap_size__)  ? __heap_size__  : 0x0400;
-STACK_SIZE = DEFINED(__stack_size__) ? __stack_size__ : 0x0400;
-VECTOR_RAM_SIZE = DEFINED(__ram_vector_table__) ? 0x00000400 : 0;
+HEAP_SIZE  = LENGTH(m_sdram_heap);
+STACK_SIZE = 0x800;
+VECTOR_RAM_SIZE = 0x400;
 
-/* Specify the memory areas */
 MEMORY
 {
   m_itcm_vectors        (RX)  : ORIGIN = 0x00000000, LENGTH = 0x00000400
@@ -19,28 +17,26 @@ MEMORY
 
   m_sdram_text          (RX)  : ORIGIN = 0x80000000, LENGTH = 0x00800000
   m_sdram               (RW)  : ORIGIN = 0x80800000, LENGTH = 0x00800000
-  m_heap                (RW)  : ORIGIN = 0x81000000, LENGTH = 0x01000000
+  m_sdram_heap          (RW)  : ORIGIN = 0x81000000, LENGTH = 0x01000000
 }
 
-/* Define output sections */
 SECTIONS
 {
   __NCACHE_REGION_START = ORIGIN(m_ocram_ncache);
   __NCACHE_REGION_SIZE  = 0;
 
   __Vectors = LOADADDR(.vectors);
-  __vectors_load_start__ = LOADADDR(.vectors);
+/*  __vectors_load_start__ = LOADADDR(.vectors);*/
   .vectors :
   {
     __VECTOR_TABLE = .;
     __vectors_start__ = .;
     . = ALIGN(4);
-    KEEP(*(.isr_vector))     /* Startup code */
+    KEEP(*(.isr_vector))
     . = ALIGN(4);
     __vectors_end__ = .;
-  } > m_itcm_vectors AT> m_flash_vectors
+  } /*> m_itcm_vectors AT*/> m_flash_vectors
 
-  /* The program code and other data goes into internal RAM */
   .flash :
   {
     *(.reset_handler)
@@ -155,17 +151,17 @@ SECTIONS
 
   .ncache.init :
   {
-    __noncachedata_start__ = .;   /* create a global symbol at ncache data start */
+    __noncachedata_start__ = .;
     *(NonCacheable.init)
     . = ALIGN(4);
-    __noncachedata_init_end__ = .;   /* create a global symbol at initialized ncache data end */
+    __noncachedata_init_end__ = .;
   } > m_ocram_ncache
   . = __noncachedata_init_end__;
   .ncache :
   {
     *(NonCacheable)
     . = ALIGN(4);
-    __noncachedata_end__ = .;     /* define a global symbol at ncache data end */
+    __noncachedata_end__ = .;
   } > m_ocram_ncache
 
   .bss_dtcm (NOLOAD):
@@ -187,29 +183,7 @@ SECTIONS
     __bss_dtcm_end__ = .;
   } > m_dtcm
 
-  .heap (NOLOAD):
-  {
-    . = ALIGN(8);
-    __end__ = .;
-    PROVIDE(end = .);
-    __HeapBase = .;
-    . += HEAP_SIZE;
-    __HeapLimit = .;
-    __heap_limit = .; /* Add for _sbrk */
-  } > m_dtcm
-
-  .stack (NOLOAD):
-  {
-    __StackTop = .;
-    . = ALIGN(8);
-    . += STACK_SIZE;
-  } > m_dtcm
-
-  __StackLimit = __StackTop - STACK_SIZE;
-  PROVIDE(__stack = __StackTop);
-
   .ARM.attributes 0 : { *(.ARM.attributes) }
-
 
   __text_load_start__ = LOADADDR(.text);
   .text :
@@ -255,5 +229,23 @@ SECTIONS
     . = ALIGN(4);
     __bss_end__ = .;
   } > m_sdram
+
+  .heap (NOLOAD):
+  {
+    . = ALIGN(8);
+    __heap_base__ = .;
+    . += HEAP_SIZE;
+    __heap_limit__ = .;
+  } > m_sdram_heap
+
+  .stack (NOLOAD):
+  {
+    . = ALIGN(8);
+    . += STACK_SIZE;
+    . = ALIGN(8);
+    __StackTop = .;
+  } > m_dtcm
+
+  PROVIDE(__stack = __StackTop);
 
 }

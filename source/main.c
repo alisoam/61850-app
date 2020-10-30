@@ -42,24 +42,28 @@ __attribute__((constructor(101))) static void setupHardware() {
 
 /********************************
 *********************/
-static void tempTask(void *pvParameters)
-{
-  while (true) {
-    vTaskDelay(5 * configTICK_RATE_HZ);
-    float temp = TEMPMON_GetCurrentTemperature(TEMPMON);
-    printf("Still Alive. Temp: %.1f\n", temp);
+
+void blinky(void* arg) {
+  for (;;) {
+    boardLedSet(BOARD_LED2, 0);
+    vTaskDelay(30);
+    boardLedSet(BOARD_LED2, 1);
+    vTaskDelay(30);
   }
 }
 
-int main()
-{
+int main() {
   puts("Programm Started...");
   printf("System clock is %lu\n", SystemCoreClock);
 
-//  xTaskCreate(tempTask, "temp", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 //  extern void enetTask();
 //  xTaskCreate(enetTask, "enet", 4*configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 
+  xTaskCreate(blinky, "blinky", 2 * configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
+
   vTaskStartScheduler();
+
+  for (;;)
+    ;
   return 1;
 }
