@@ -1,6 +1,6 @@
 #include "board.h"
 
-void SWO_Init() {
+static void swoInit() {
   uint32_t SWOSpeed = 6000000;
   uint32_t prescaler = (BOARD_BOOTCLOCKRUN_TRACE_CLK_ROOT / SWOSpeed) - 1;
 
@@ -31,6 +31,11 @@ void SWO_Init() {
 
   DWT->CTRL = 0x400003FE; /* DWT_CTRL */
   TPI->FFCR = 0x00000100; /* Formatter and Flush Control Register */
+}
+
+__attribute__((constructor(101))) static void init() {
+  CLOCK_EnableClock(kCLOCK_Trace);
+  swoInit();
 }
 
 void SWOOut(char* str) {

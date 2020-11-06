@@ -7,8 +7,8 @@ VECTOR_RAM_SIZE = 0x400;
 MEMORY
 {
   m_itcm_vectors        (RX)  : ORIGIN = 0x00000000, LENGTH = 0x00000400
-  m_itcm                (RX)  : ORIGIN = 0x00000400, LENGTH = 0x0001FC00
-  m_dtcm                (RW)  : ORIGIN = 0x20000000, LENGTH = 0x00020000
+  m_itcm                (RX)  : ORIGIN = 0x00000400, LENGTH = 0x0003FC00
+  m_dtcm                (RW)  : ORIGIN = 0x20000000, LENGTH = 0x00040000
   m_ocram               (RW)  : ORIGIN = 0x20200000, LENGTH = 0x00040000
   m_ocram_ncache        (RW)  : ORIGIN = 0x20040000, LENGTH = 0x00040000
 
@@ -26,29 +26,36 @@ SECTIONS
   __NCACHE_REGION_SIZE  = 0;
 
   __Vectors = LOADADDR(.vectors);
-/*  __vectors_load_start__ = LOADADDR(.vectors);*/
+  __vectors_load_start__ = LOADADDR(.vectors);
   .vectors :
   {
+    . = ALIGN(4);
     __VECTOR_TABLE = .;
     __vectors_start__ = .;
-    . = ALIGN(4);
+
     KEEP(*(.isr_vector))
+
     . = ALIGN(4);
     __vectors_end__ = .;
-  } /*> m_itcm_vectors AT*/> m_flash_vectors
+  } > m_itcm_vectors AT> m_flash_vectors
 
-  .flash :
+  .text_flash :
   {
+    . = ALIGN(4);
+
     *(.reset_handler)
     *(.text.Reset_Handler .text.SystemInit .text.SystemInitHook \
       .rodata.Reset_Handler .rodata.SystemInit .rodata.SystemInitHook)
+
+    . = ALIGN(4);
   } > m_flash
 
-  __itcm_load_start__ = LOADADDR(.itcm);
-  .itcm :
+  __text_itcm_load_start__ = LOADADDR(.text_itcm);
+  .text_itcm :
   {
-    __itcm_start__ = .;
     . = ALIGN(4);
+    __text_itcm_start__ = .;
+
     *(.text.*_Handler)
     */board*(.text*)
     libdevice.a(.text*)
@@ -56,9 +63,9 @@ SECTIONS
     *crtbegin.o(.text* .iplt*)
     libFreeRTOS.a(.text*)
     *freertos_hooks*(.text*)
-    *main.*(.text*)
+/*    *main.*(.text*)*/
     *syscall*(.text*)
-    *swo*(.text*)
+/*    *swo*(.text*)*/
     *handlers*(.text*)
     */modules/FreeRTOS*(.text*)
 
@@ -67,10 +74,22 @@ SECTIONS
     *(.eh_frame)
     KEEP (*(.init))
     KEEP (*(.fini))
-    . = ALIGN(4);
+
+    . = ALIGN(4); 
+    __text_itcm_end__ = .;
   } > m_itcm AT> m_flash
 
- .ctors :
+  __text_load_start__ = LOADADDR(.text);
+  .text :
+  {
+    . = ALIGN(4);
+    __text_start__ = .;
+
+    *(.text .text*)
+
+  } > m_sdram_text AT> m_flash
+
+  .ctors :
   {
     __CTOR_LIST__ = .;
     /* gcc uses crtbegin.o to find the start of
@@ -92,7 +111,7 @@ SECTIONS
     KEEP (*(SORT(.ctors.*)))
     KEEP (*(.ctors))
     __CTOR_END__ = .;
-  } > m_itcm AT> m_flash
+  } > m_sdram_text AT> m_flash
 
   .dtors :
   {
@@ -103,14 +122,14 @@ SECTIONS
     KEEP (*(SORT(.dtors.*)))
     KEEP (*(.dtors))
     __DTOR_END__ = .;
-  } > m_itcm AT> m_flash
+  } > m_sdram_text AT> m_flash
 
   .preinit_array :
   {
     PROVIDE_HIDDEN (__preinit_array_start = .);
     KEEP (*(.preinit_array*))
     PROVIDE_HIDDEN (__preinit_array_end = .);
-  } > m_itcm AT> m_flash
+  } > m_sdram_text AT> m_flash
 
   .init_array :
   {
@@ -118,7 +137,7 @@ SECTIONS
     KEEP (*(SORT(.init_array.*)))
     KEEP (*(.init_array*))
     PROVIDE_HIDDEN (__init_array_end = .);
-  } > m_itcm AT> m_flash
+  } > m_sdram_text AT> m_flash
 
   .fini_array :
   {
@@ -126,28 +145,22 @@ SECTIONS
     KEEP (*(SORT(.fini_array.*)))
     KEEP (*(.fini_array*))
     PROVIDE_HIDDEN (__fini_array_end = .);
-    __itcm_end__ = .;
-  } > m_itcm AT> m_flash
+  } > m_sdram_text AT> m_flash
 
-  __data_dtcm_load_start__ = LOADADDR(.data_dtcm);
-  .data_dtcm :
+  .ARM.extab :
   {
-    . = ALIGN(4);
-    __data_dtcm_start__ = .;
-    */board*(.data* .rodata*)
-    *(.data.*_Handler .rodata.*_Handler)
-    libdevice.a(.data* .rodata*)
-    lib_a-*(.data* .rodata*)
-    *crtbegin.o(.igot.plt .rel.iplt)
-    libFreeRTOS.a(.data* .rodata*)
-    *freertos_hooks*(.data* .rodata*)
-    *main.*(.data* .rodata*)
-    *syscalls.*(.data* .rodata*)
-    */modules/FreeRTOS*(.data* .rodata*)
-    KEEP(*(.jcr*))
-    . = ALIGN(4);
-    __data_dtcm_end__ = .;
-  } > m_dtcm AT> m_flash
+    *(.ARM.extab* .gnu.linkonce.armextab.*)
+  } > m_sdram_text AT> m_flash
+
+  .ARM :
+  {
+    __exidx_start = .;
+
+    *(.ARM.exidx*)
+
+    __exidx_end = .;
+    __text_end__ = .;
+  } > m_sdram_text AT> m_flash
 
   .ncache.init :
   {
@@ -164,57 +177,57 @@ SECTIONS
     __noncachedata_end__ = .;
   } > m_ocram_ncache
 
+  __data_dtcm_load_start__ = LOADADDR(.data_dtcm);
+  .data_dtcm :
+  {
+    . = ALIGN(4);
+    __data_dtcm_start__ = .;
+
+    */board*(.data* .rodata*)
+    *(.data.*_Handler .rodata.*_Handler)
+    libdevice.a(.data* .rodata*)
+    lib_a-*(.data* .rodata*)
+    *crtbegin.o(.igot.plt .rel.iplt)
+    libFreeRTOS.a(.data* .rodata*)
+    *freertos_hooks*(.data* .rodata*)
+    *syscalls.*(.data* .rodata*)
+    */modules/FreeRTOS*(.data* .rodata*)
+    KEEP(*(.jcr*))
+
+    . = ALIGN(4);
+    __data_dtcm_end__ = .;
+  } > m_dtcm AT> m_flash
+
   .bss_dtcm (NOLOAD):
   {
     . = ALIGN(4);
     __bss_dtcm_start__ = .;
-    */board*(.data*)
+
+    */board*(.bss*)
     *(.bss.*_Handler)
     libdevice.a(.bss*)
     lib_a-*(.bss*)
     *crtbegin.o(.bss)
     libFreeRTOS.a(.bss*)
     *freertos_hooks*(.bss*)
-    *main.*(.bss*)
     *syscalls.*(.bss*)
     */modules/FreeRTOS*(.bss*)
     *(COMMON)
+
     . = ALIGN(4);
     __bss_dtcm_end__ = .;
   } > m_dtcm
-
-  .ARM.attributes 0 : { *(.ARM.attributes) }
-
-  __text_load_start__ = LOADADDR(.text);
-  .text :
-  {
-    . = ALIGN(4);
-    __text_start__ = .;
-    . = ALIGN(4);
-  } > m_sdram_text AT> m_flash
-
-  .ARM.extab :
-  {
-    *(.ARM.extab* .gnu.linkonce.armextab.*)
-  } > m_sdram_text AT> m_flash
-
-  .ARM :
-  {
-    __exidx_start = .;
-    *(.ARM.exidx*)
-    __exidx_end = .;
-    __text_end__ = .;
-  } > m_sdram_text AT> m_flash
 
   __data_load_start__ = LOADADDR(.data);
   .data :
   {
     . = ALIGN(4);
     __data_start__ = .;
+
     *(.data)
     *(.data*)
-    *(.rodata)
-    *(.rodata*)
+    *(.rodata .rodata*)
+
     . = ALIGN(4);
     __data_end__ = .;
   } > m_sdram AT> m_flash
@@ -223,9 +236,10 @@ SECTIONS
   {
     . = ALIGN(4);
     __bss_start__ = .;
-    *(m_usb_dma_noninit_data)
+
     *(.bss)
     *(.bss*)
+
     . = ALIGN(4);
     __bss_end__ = .;
   } > m_sdram
@@ -244,8 +258,8 @@ SECTIONS
     . += STACK_SIZE;
     . = ALIGN(8);
     __StackTop = .;
+    _stack_top = .;
   } > m_dtcm
 
   PROVIDE(__stack = __StackTop);
-
 }

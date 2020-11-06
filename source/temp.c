@@ -10,7 +10,6 @@ void TEMPMON_LOW_HIGH_IRQHANDLER() {
 }
 
 void TEMPMON_PANIC_IRQHANDLER() {
-  boardLedSet(BOARD_LED1, 1);
 }
 
 static void tempTask(void *pvParameters)
@@ -22,6 +21,6 @@ static void tempTask(void *pvParameters)
   }
 }
 
-/*__attribute__((constructor(201))) static void setup() {
+__attribute__((constructor)) static void setup() {
   xTaskCreate(tempTask, "temp", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
-}*/
+}

@@ -4,8 +4,6 @@
 
 
 void HardFault_Handler() {
-  extern void SWOOut();
-  SWOOut("Hard Fault...\n");
   for (;;) {
     boardLedSet(BOARD_LED1, 1); 
     for (volatile unsigned int j = 0; j < 4000000; j++)
@@ -29,8 +27,8 @@ void Reset_Handler() {
   extern void SystemInit();
   SystemInit();
 
-//  IOMUXC_GPR->GPR17 = 0xaaaaffff;
-//  IOMUXC_GPR->GPR16 |= IOMUXC_GPR_GPR16_FLEXRAM_BANK_CFG_SEL_MASK;
+  IOMUXC_GPR->GPR17 = 0xaaaaffff;
+  IOMUXC_GPR->GPR16 |= IOMUXC_GPR_GPR16_FLEXRAM_BANK_CFG_SEL_MASK;
 
   unsigned int* VTOR = (unsigned int *) 0xE000ED08;
   extern void* __isr_vector;
@@ -40,7 +38,7 @@ void Reset_Handler() {
               * endPointer,
               * loadPointer;
 
-/*  extern unsigned int __vectors_load_start__,
+  extern unsigned int __vectors_load_start__,
                       __vectors_start__,
                       __vectors_end__;
   loadPointer = &__vectors_load_start__;
@@ -50,19 +48,14 @@ void Reset_Handler() {
     *startPointer = *loadPointer;
     loadPointer++;
     startPointer++;
-  }*/
-
-  extern unsigned int __itcm_load_start__,
-                      __itcm_start__,
-                      __itcm_end__;
-  loadPointer = &__itcm_load_start__;
-  startPointer = &__itcm_start__;
-  endPointer = &__itcm_end__;
-  while (startPointer < endPointer) {
-    *startPointer = 0;
-    loadPointer++;
-    startPointer++;
   }
+
+  extern unsigned int __text_itcm_load_start__,
+                      __text_itcm_start__,
+                      __text_itcm_end__;
+  loadPointer = &__text_itcm_load_start__;
+  startPointer = &__text_itcm_start__;
+  endPointer = &__text_itcm_end__;
   while (startPointer < endPointer) {
     *startPointer = *loadPointer;
     loadPointer++;

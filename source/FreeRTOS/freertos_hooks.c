@@ -10,8 +10,7 @@
 #if defined(configSUPPORT_STATIC_ALLOCATION) && configSUPPORT_STATIC_ALLOCATION == 1
 void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer,
                                     StackType_t **ppxIdleTaskStackBuffer,
-                                    uint32_t *pulIdleTaskStackSize )
-{
+                                    uint32_t *pulIdleTaskStackSize ) {
   static StaticTask_t xIdleTaskTCB;
   static StackType_t uxIdleTaskStack[ configMINIMAL_STACK_SIZE ];
   *ppxIdleTaskTCBBuffer = &xIdleTaskTCB;
@@ -21,8 +20,7 @@ void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer,
 
 void vApplicationGetTimerTaskMemory( StaticTask_t **ppxTimerTaskTCBBuffer,
                                      StackType_t **ppxTimerTaskStackBuffer,
-                                     uint32_t *pulTimerTaskStackSize )
-{
+                                     uint32_t *pulTimerTaskStackSize ) {
   static StaticTask_t xTimerTaskTCB;
   static StackType_t uxTimerTaskStack[ configTIMER_TASK_STACK_DEPTH ];
   *ppxTimerTaskTCBBuffer = &xTimerTaskTCB;
@@ -31,32 +29,20 @@ void vApplicationGetTimerTaskMemory( StaticTask_t **ppxTimerTaskTCBBuffer,
 }
 #endif
 
-void FreeRTOSDelay(uint32_t ms)
-{
+void FreeRTOSDelay(uint32_t ms) {
   vTaskDelay(ms);
 }
 
-void vApplicationMallocFailedHook()
-{
-//  extern void SWOOut();
-//  SWOOut("Malloc Failed!\n");
+void vApplicationMallocFailedHook() {
   taskDISABLE_INTERRUPTS();
   for (;; )
     ;
 }
 
-void vApplicationIdleHook()
-{
-  if (xTaskGetTickCount() % 600 < 4)
-    boardLedSet(BOARD_LED1, 1);
-
-  if (xTaskGetTickCount() % 600 >= 4)
-    boardLedSet(BOARD_LED1, 0);
-//  __WFI();
+void vApplicationIdleHook() {
 }
 
-void vApplicationStackOverflowHook(TaskHandle_t pxTask, signed char *pcTaskName)
-{
+void vApplicationStackOverflowHook(TaskHandle_t pxTask, signed char *pcTaskName) {
   (void) pxTask;
   (void) pcTaskName;
 
@@ -64,6 +50,5 @@ void vApplicationStackOverflowHook(TaskHandle_t pxTask, signed char *pcTaskName)
     ;
 }
 
-void vApplicationTickHook()
-{
+void vApplicationTickHook() {
 }

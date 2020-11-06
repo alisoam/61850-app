@@ -17,6 +17,32 @@
 
 extern int counter;
 
+__attribute__((constructor(101))) static void init2() {
+  setupHardwares()
+  xTaskCreate(enetTask, "enet", 4*configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
+}
+
+static void setupHardwares() {
+ const clock_enet_pll_config_t config = {
+    .enableClkOutput = true,
+    .loopDivider = 1,
+    .enableClkOutput1 = true,
+    .loopDivider1 = 1,
+    .enableClkOutput25M = false,
+    .src = kCLOCK_PllClkSrc24M,
+  };
+  CLOCK_InitEnetPll(&config);
+  IOMUXC_EnableMode(IOMUXC_GPR, kIOMUXC_GPR_ENET1TxClkOutputDir, true);
+  IOMUXC_EnableMode(IOMUXC_GPR, kIOMUXC_GPR_ENET2TxClkOutputDir, true);
+  IOMUXC_EnableMode(IOMUXC_GPR, IOMUXC_GPR_GPR1_ENET1_CLK_SEL_MASK, false);
+  IOMUXC_EnableMode(IOMUXC_GPR, IOMUXC_GPR_GPR1_ENET2_CLK_SEL_MASK, false);
+
+  CLOCK_EnableClock(kCLOCK_Enet);
+  CLOCK_EnableClock(kCLOCK_Enet2);
+
+  GPIO_PinWrite(GPIO2, 8, 1);
+}
+
 void pDelayMs(uint32_t ms) {
   vTaskDelay(ms / 5);
 }
