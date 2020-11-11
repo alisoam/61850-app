@@ -14,8 +14,8 @@ define reset
 #	monitor reg r13 = (0x00000000)
 #	monitor reg pc = (0x00000004)
 	break main
-#	continue
-#	continue
+	continue
+	continue
 
 	monitor SWO EnableTarget 6000000 64000 1 0
 end

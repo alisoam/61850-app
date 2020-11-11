@@ -10,7 +10,7 @@ MEMORY
   m_itcm                (RX)  : ORIGIN = 0x00000400, LENGTH = 0x0003FC00
   m_dtcm                (RW)  : ORIGIN = 0x20000000, LENGTH = 0x00040000
   m_ocram               (RW)  : ORIGIN = 0x20200000, LENGTH = 0x00040000
-  m_ocram_ncache        (RW)  : ORIGIN = 0x20040000, LENGTH = 0x00040000
+  m_ocram_ncache        (RW)  : ORIGIN = 0x20240000, LENGTH = 0x00040000
 
   m_flash_vectors       (RX)  : ORIGIN = 0x60100000, LENGTH = 0x00000400
   m_flash               (RX)  : ORIGIN = 0x60100400, LENGTH = 0x006FFC00
@@ -63,9 +63,8 @@ SECTIONS
     *crtbegin.o(.text* .iplt*)
     libFreeRTOS.a(.text*)
     *freertos_hooks*(.text*)
-/*    *main.*(.text*)*/
+    liblwIP.a(.text*)
     *syscall*(.text*)
-/*    *swo*(.text*)*/
     *handlers*(.text*)
     */modules/FreeRTOS*(.text*)
 
@@ -170,8 +169,10 @@ SECTIONS
     __noncachedata_init_end__ = .;
   } > m_ocram_ncache
   . = __noncachedata_init_end__;
-  .ncache :
+  .bss_ncache (NOLOAD):
   {
+    . = ALIGN(4);
+    *(.bss_ncache)
     *(NonCacheable)
     . = ALIGN(4);
     __noncachedata_end__ = .;
@@ -190,9 +191,12 @@ SECTIONS
     *crtbegin.o(.igot.plt .rel.iplt)
     libFreeRTOS.a(.data* .rodata*)
     *freertos_hooks*(.data* .rodata*)
+    liblwIP.a(.data* .rodata*)
     *syscalls.*(.data* .rodata*)
     */modules/FreeRTOS*(.data* .rodata*)
     KEEP(*(.jcr*))
+
+    *(.data_dtcm .data_dtcm*)
 
     . = ALIGN(4);
     __data_dtcm_end__ = .;
@@ -210,9 +214,12 @@ SECTIONS
     *crtbegin.o(.bss)
     libFreeRTOS.a(.bss*)
     *freertos_hooks*(.bss*)
+    liblwIP.a(.bss*)
     *syscalls.*(.bss*)
     */modules/FreeRTOS*(.bss*)
     *(COMMON)
+
+    *(.bss_dtcm .bss_dtcm.*)
 
     . = ALIGN(4);
     __bss_dtcm_end__ = .;

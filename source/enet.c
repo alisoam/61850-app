@@ -15,13 +15,6 @@
 #include "pin_mux.h"
 
 
-extern int counter;
-
-__attribute__((constructor(101))) static void init2() {
-  setupHardwares()
-  xTaskCreate(enetTask, "enet", 4*configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
-}
-
 static void setupHardwares() {
  const clock_enet_pll_config_t config = {
     .enableClkOutput = true,
@@ -44,16 +37,16 @@ static void setupHardwares() {
 }
 
 void pDelayMs(uint32_t ms) {
-  vTaskDelay(ms / 5);
+  vTaskDelay(ms / portTICK_PERIOD_MS);
 }
 
 static void mainTask(void* arg) {
   extern void iec61850Main();
 //  iec61850Main();
   
+  printf(">>>> Main Task Finished <<<<\n");
   while(1) {
-    printf(">>>> Main Task Finished <<<<\n");
-    vTaskDelay(configTICK_RATE_HZ / 2);
+    vTaskDelay(configTICK_RATE_HZ);
   }
 }
 
@@ -61,7 +54,7 @@ static void systemStart() {
   xTaskCreate(mainTask, "main Task", 2048, NULL, (tskIDLE_PRIORITY + 1UL), NULL);
 }
 
-static void setLinkUP(ENET_Type * enet, bool full_duplex, bool T100) {
+static void setLinkUp(ENET_Type * enet, bool full_duplex, bool T100) {
   if (full_duplex) {
     enet->RCR &= ~ENET_RCR_DRT_MASK;
     enet->TCR |= ENET_TCR_FDEN_MASK;
@@ -109,8 +102,16 @@ static void lwip_init(struct netif* netif) {
   }
 }
 
+#define ENET_RXBD_NUM (1)
+#define ENET_TXBD_NUM (50)
+#define ENET_RXBUFF_SIZE (ENET_FRAME_MAX_FRAMELEN)
+#define ENET_TXBUFF_SIZE (ENET_FRAME_MAX_FRAMELEN)
 #define ENET_DATA_LENGTH (1000)
-uint8_t enet_frame[ENET_DATA_LENGTH] __attribute__((aligned(64)));
+
+enet_rx_bd_struct_t rx_desc[2][ENET_RXBD_NUM] __attribute__((section (".bss_dtcm"))) __attribute__((aligned(64)));
+enet_tx_bd_struct_t tx_desc[2][ENET_TXBD_NUM] __attribute__((section (".bss_dtcm"))) __attribute__((aligned(64)));
+uint8_t enet_frame[ENET_DATA_LENGTH] __attribute__((section (".bss_dtcm"))) __attribute__((aligned(64)));
+
 static void ENET_BuildBroadCastFrame(void) {
   uint32_t count  = 0;
   uint32_t length = ENET_DATA_LENGTH - 14;
@@ -125,14 +126,15 @@ static void ENET_BuildBroadCastFrame(void) {
 }
 
 static void sendTask(void* arg) {
+  printf("SendTask\r\n");
   static ENET_Type* enet[] = {ENET, ENET2};
   unsigned int i = (unsigned int) arg;
   ENET_Type* e = (ENET_Type*) enet[i];
 
   uint32_t j = 0;
   while (true) {
-///    uint32_t eir = ENET->EIR;
-//    e->EIR = eir & ~(ENET_EIR_MII_MASK);
+    uint32_t eir = ENET->EIR;
+    e->EIR = eir & ~(ENET_EIR_MII_MASK);
 //    printf("EIR %lx\n", eir);
 
     extern emac_data_t emac;
@@ -149,12 +151,64 @@ static void sendTask(void* arg) {
   }
 }
 
-void enetTask(void* arg) {
-  ENET_BuildBroadCastFrame();
-  struct netif n;
-  lwip_init(&n);
+static void initRxDesc(enet_rx_bd_struct_t* desc, size_t count) {
+  memset(desc, 0, count * sizeof(enet_tx_bd_struct_t));
+  desc[count - 1].control |= ENET_BUFFDESCRIPTOR_RX_WRAP_MASK;
+}
 
+static void initTxDesc(enet_tx_bd_struct_t* desc, size_t count) {
+  memset(desc, 0, count * sizeof(enet_tx_bd_struct_t));
+  desc[count - 1].control |= ENET_BUFFDESCRIPTOR_TX_WRAP_MASK;
+}
+
+
+static void ENETInit(ENET_Type* enet, uint32_t rx_desc, uint32_t tx_desc) { 
+  enet->ECR |= ENET_ECR_RESET_MASK;
+
+  enet->RCR |= ENET_RCR_RMII_MODE_MASK | ENET_RCR_RMII_MODE_MASK | ENET_RCR_MII_MODE_MASK | ENET_RCR_MAX_FL(1528);
+  enet->RCR &= ~(ENET_RCR_LOOP_MASK);
+  enet->TCR |= ENET_TCR_ADDINS_MASK;
+
+  enet->PALR = 0x00112233U;
+  enet->PAUR = 0x44550000U;
+  
+  enet->RDSR = rx_desc;
+  enet->TDSR = tx_desc;
+
+  enet->MRBR |= ENET_MRBR_R_BUF_SIZE(ENET_RXBUFF_SIZE);
+
+  enet->RSFL = ENET_RSFL_RX_SECTION_FULL(20);
+  enet->RSEM |= ENET_RSEM_RX_SECTION_EMPTY(45);
+  enet->RAEM |= ENET_RAEM_RX_ALMOST_EMPTY(10);
+  enet->RAFL |= ENET_RAFL_RX_ALMOST_FULL(60);
+
+  enet->TSEM |= ENET_TSEM_TX_SECTION_EMPTY(45);
+  enet->TAEM |= ENET_TAEM_TX_ALMOST_EMPTY(10);
+  enet->TAFL |= ENET_TAFL_TX_ALMOST_FULL(60);
+
+  enet->TACC |= 0;
+  enet->RACC |= ENET_RACC_LINEDIS_MASK;
+
+  enet->ECR |= ENET_ECR_DBSWP_MASK /* | ENET_ECR_EN1588_MASK */| ENET_ECR_ETHEREN_MASK;
+
+
+}
+
+void enetTask(void* arg) {
+//  struct netif n;
+//  lwip_init(&n);
   static ENET_Type* enet[] = {ENET, ENET2};
+
+  ENET_BuildBroadCastFrame();
+  for (unsigned int i = 1; i < 2; i++) {
+
+    initRxDesc(rx_desc[i], ENET_RXBD_NUM);
+    initTxDesc(tx_desc[i], ENET_TXBD_NUM);
+    ENETInit(enet[i], (uint32_t)rx_desc[i], (uint32_t)tx_desc[i]);
+  }
+
+
+
   static uint32_t phy_addr[] = {BOARD_ENET0_PHY_ADDRESS, BOARD_ENET1_PHY_ADDRESS};
   uint32_t sysClock = CLOCK_GetFreq(kCLOCK_IpgClk);
   struct PhyState phy_state[2];
@@ -167,31 +221,37 @@ void enetTask(void* arg) {
     }
   }
 
-//  xTaskCreate(sendTask, "send", 2*configMINIMAL_STACK_SIZE, (void*)0, tskIDLE_PRIORITY, NULL);
-///  xTaskCreate(sendTask, "send", 2*configMINIMAL_STACK_SIZE, (void*)1, tskIDLE_PRIORITY, NULL);
+  printf("Creating Tasks\r\n");
+  xTaskCreate(sendTask, "send", 2*configMINIMAL_STACK_SIZE, (void*)0, tskIDLE_PRIORITY, NULL);
+  xTaskCreate(sendTask, "send", 2*configMINIMAL_STACK_SIZE, (void*)1, tskIDLE_PRIORITY, NULL);
 
 
-  NVIC_SetPriority(ENET_IRQn, config_ENET_INTERRUPT_PRIORITY);
+
+/*  NVIC_SetPriority(ENET_IRQn, config_ENET_INTERRUPT_PRIORITY);
   NVIC_SetPriority(ENET2_IRQn, config_ENET_INTERRUPT_PRIORITY);
   NVIC_EnableIRQ(ENET_IRQn);
-  NVIC_EnableIRQ(ENET2_IRQn);
+  NVIC_EnableIRQ(ENET2_IRQn);*/
 
 
-  systemStart();
+//  systemStart();
 
+
+  extern int cntr_adv;
+  printf("%p\n",& cntr_adv);
   while (1) {
-
-    //    printf("counter: %d\n", counter); // FIXME
+    printf("counter: %d\n", cntr_adv); // FIXME
     bool busy = false;
     for (unsigned int i = 0; i < 2; i++) {
       uint32_t physts = lpcPHYStsPoll(&phy_state[i]);
       if (physts & PHY_LINK_CHANGED) {
         if (physts & PHY_LINK_CONNECTED) {
           boardLedSet(BOARD_LED2 + i, 1);
-          setLinkUP(enet[i], physts & PHY_LINK_FULLDUPLX, physts & PHY_LINK_SPEED100);
+          setLinkUp(enet[i], physts & PHY_LINK_FULLDUPLX, physts & PHY_LINK_SPEED100);
+          printf("link %d is up\n", i);
         } else {
           boardLedSet(BOARD_LED2 + i, 0);
           setLinkDown(enet[i]);
+          printf("link %d is down\n", i);
         }
         busy |= physts & PHY_LINK_BUSY;
       }
@@ -205,4 +265,9 @@ void enetTask(void* arg) {
   while (1) {
     vTaskDelay(5);
   }
+}
+
+__attribute__((constructor)) static void init() {
+  setupHardwares();
+  xTaskCreate(enetTask, "enet", 4*configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 }

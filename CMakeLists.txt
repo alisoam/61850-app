@@ -157,7 +157,7 @@ add_executable(com.elf
 #  ./source/example1/server.c
 #  ./source/example1/static_model.c
 
-  #  ./source/enet.c
+  ./source/enet.c
   #  ./source/temp.c
   ./source/heartbeat.c
   ./source/swo.c

@@ -7,23 +7,24 @@
 #include "emac/emac.h"
 #include "netif/ethernet.h"
 
-emac_data_t emac __attribute__((section (".fast_bss"))) __attribute__((aligned(64)));
+emac_data_t emac __attribute__((section (".bss_itcm"))) __attribute__((aligned(64)));
 
-char lwip_heap[MEM_SIZE] __attribute__((section (".m_ocram2"))) __attribute__((aligned(64)));
+char lwip_heap[MEM_SIZE] __attribute__((section (".bss_ncache"))) __attribute__((aligned(64)));
 
-int counter = 0;// FIXME remove this line
+int cntr_adv = 0;
 
 void enet_handler(port_data_t* port) {
   signed portBASE_TYPE xRecTaskWoken = pdFALSE, XTXTaskWoken = pdFALSE;
   ENET_Type* enet = port->enet;
   uint32_t ints = enet->EIR;
 
+  cntr_adv++;
+
   if (ints & (ENET_EIR_RXF_MASK | ENET_EIR_RXB_MASK))
     xSemaphoreGiveFromISR(port->rx_sem, &xRecTaskWoken);
 
   if (ints & (ENET_EIR_TXF_MASK | ENET_EIR_TXB_MASK)) {
     xSemaphoreGiveFromISR(port->tx_clean_sem, &XTXTaskWoken);
-    counter++;
 	}
 
   enet->EIR |= (ints & (ENET_EIR_RXF_MASK | ENET_EIR_RXB_MASK |

@@ -45,7 +45,7 @@
 //#define LINK_STATS                      0
 //#define LWIP_STATS_DISPLAY              0
 
-#define LWIP_DEBUG                      LWIP_DBG_OFF
+#define LWIP_DEBUG                      LWIP_DBG_ON
 #define SNTP_DEBUG                      LWIP_DBG_OFF
 #define SLIP_DEBUG                      LWIP_DBG_OFF
 #define PPP_DEBUG                       LWIP_DBG_OFF
@@ -73,7 +73,7 @@
 #define TCP_QLEN_DEBUG                  LWIP_DBG_OFF
 #define TCP_RST_DEBUG                   LWIP_DBG_OFF
 #define DHCP_DEBUG                      LWIP_DBG_OFF
-#define EMAC_DEBUG                      LWIP_DBG_OFF
+#define EMAC_DEBUG                      LWIP_DBG_ON
 
 #define DEFAULT_THREAD_PRIO             (tskIDLE_PRIORITY + 1)
 #define DEFAULT_THREAD_STACKSIZE        (512)
@@ -106,7 +106,7 @@
 //#define LWIP_RAW                    0
 //#define IP_REASSEMBLY               0
 //#define LWIP_NOASSERT               0
-#define MEM_SIZE                      0x00020000
+#define MEM_SIZE                      0x00040000
 extern char lwip_heap[];
 #define LWIP_RAM_HEAP_POINTER         lwip_heap
 

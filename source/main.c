@@ -1,10 +1,6 @@
 #include <stdio.h>
 
 #include "FreeRTOS.h"
-#include "task.h"
-
-__attribute__((constructor)) static void init() {
-}
 
 int main() {
   puts("Programm Started...");
