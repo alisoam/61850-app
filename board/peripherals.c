@@ -341,7 +341,7 @@ void BOARD_InitPeripherals(void)
 {
   /* Initialize components */
   SEMC_init();
-  TEMPMON_init();
+//  TEMPMON_init();
   TRNG_init();
 }
 

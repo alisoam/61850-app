@@ -1,7 +1,7 @@
 #include "board.h"
 
-void SWO_Init() {
-  uint32_t SWOSpeed = 64000;
+static void swoInit() {
+  uint32_t SWOSpeed = 6000000;
   uint32_t prescaler = (BOARD_BOOTCLOCKRUN_TRACE_CLK_ROOT / SWOSpeed) - 1;
 
   CoreDebug->DEMCR = CoreDebug_DEMCR_TRCENA_Msk;
@@ -31,4 +31,14 @@ void SWO_Init() {
 
   DWT->CTRL = 0x400003FE; /* DWT_CTRL */
   TPI->FFCR = 0x00000100; /* Formatter and Flush Control Register */
+}
+
+__attribute__((constructor)) static void init() {
+  CLOCK_EnableClock(kCLOCK_Trace);
+  swoInit();
+}
+
+void SWOOut(char* str) {
+  for (char* c = str; *c != NULL; c++)
+    ITM_SendChar(*c);
 }

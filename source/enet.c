@@ -15,6 +15,27 @@
 #include "pin_mux.h"
 
 
+static void setupHardwares() {
+ const clock_enet_pll_config_t config = {
+    .enableClkOutput = true,
+    .loopDivider = 1,
+    .enableClkOutput1 = true,
+    .loopDivider1 = 1,
+    .enableClkOutput25M = false,
+    .src = kCLOCK_PllClkSrc24M,
+  };
+  CLOCK_InitEnetPll(&config);
+  IOMUXC_EnableMode(IOMUXC_GPR, kIOMUXC_GPR_ENET1TxClkOutputDir, true);
+  IOMUXC_EnableMode(IOMUXC_GPR, kIOMUXC_GPR_ENET2TxClkOutputDir, true);
+  IOMUXC_EnableMode(IOMUXC_GPR, IOMUXC_GPR_GPR1_ENET1_CLK_SEL_MASK, false);
+  IOMUXC_EnableMode(IOMUXC_GPR, IOMUXC_GPR_GPR1_ENET2_CLK_SEL_MASK, false);
+
+  CLOCK_EnableClock(kCLOCK_Enet);
+  CLOCK_EnableClock(kCLOCK_Enet2);
+
+  GPIO_PinWrite(GPIO2, 8, 1);
+}
+
 extern int counter;
 
 void pDelayMs(uint32_t ms) {
@@ -44,7 +65,7 @@ static void tcpip_init_done_signal(void *arg)
   *(s32_t *) arg = 1;
 }
 
-static void lwip_init(struct netif* netif) {
+static void lwipInit(struct netif* netif) {
   // FIXME vTaskDelay(NODE_REBOOT_INTERVAL / portTICK_RATE_MS);
 
   ip4_addr_t ipaddr, netmask, gw;
@@ -69,50 +90,9 @@ static void lwip_init(struct netif* netif) {
   }
 }
 
-#define ENET_DATA_LENGTH (1000)
-uint8_t enet_frame[ENET_DATA_LENGTH] __attribute__((aligned(64)));
-static void ENET_BuildBroadCastFrame(void) {
-  uint32_t count  = 0;
-  uint32_t length = ENET_DATA_LENGTH - 14;
-
-  uint8_t* buff = enet_frame;
-  for (count = 0; count < 6U; count++)
-    buff[count] = 0xFFU;
-  buff[12] = (length >> 8) & 0xFFU;
-  buff[13] = length & 0xFFU;
-  for (count = 0; count < length; count++)
-    buff[count + 14] = count % 0xFFU;
-}
-
-static void sendTask(void* arg) {
-  static ENET_Type* enet[] = {ENET, ENET2};
-  unsigned int i = (unsigned int) arg;
-  ENET_Type* e = (ENET_Type*) enet[i];
-
-  uint32_t j = 0;
-  while (true) {
-///    uint32_t eir = ENET->EIR;
-//    e->EIR = eir & ~(ENET_EIR_MII_MASK);
-//    printf("EIR %lx\n", eir);
-
-    extern emac_data_t emac;
-    enet_tx_bd_struct_t* tx_desc = emac.port[i].tx_desc;
-    tx_desc[j].buffer = enet_frame;
-    tx_desc[j].length = ENET_DATA_LENGTH;
-    tx_desc[j].control |= ENET_BUFFDESCRIPTOR_TX_LAST_MASK | ENET_BUFFDESCRIPTOR_TX_TRANMITCRC_MASK | ENET_BUFFDESCRIPTOR_TX_READY_MASK;
-    e->TDAR |= ENET_TDAR_TDAR_MASK;
-
-    j++;
-    if (j >= TX_DESC_COUNT)
-      j = 0;
-    vTaskDelay(1);
-  }
-}
-
 void enetTask(void* arg) {
-  ENET_BuildBroadCastFrame();
   struct netif n;
-  lwip_init(&n);
+  lwipInit(&n);
 
   static ENET_Type* enet[] = {ENET, ENET2};
   static uint32_t phy_addr[] = {BOARD_ENET0_PHY_ADDRESS, BOARD_ENET1_PHY_ADDRESS};
@@ -126,10 +106,6 @@ void enetTask(void* arg) {
         ;
     }
   }
-
-//  xTaskCreate(sendTask, "send", 2*configMINIMAL_STACK_SIZE, (void*)0, tskIDLE_PRIORITY, NULL);
-///  xTaskCreate(sendTask, "send", 2*configMINIMAL_STACK_SIZE, (void*)1, tskIDLE_PRIORITY, NULL);
-
 
   NVIC_SetPriority(ENET_IRQn, config_ENET_INTERRUPT_PRIORITY);
   NVIC_SetPriority(ENET2_IRQn, config_ENET_INTERRUPT_PRIORITY);
@@ -162,4 +138,9 @@ void enetTask(void* arg) {
   while (1) {
     vTaskDelay(5);
   }
+}
+
+__attribute__((constructor)) static void init() {
+  setupHardwares();
+  xTaskCreate(enetTask, "enet", 4*configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 }

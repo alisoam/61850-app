@@ -74,10 +74,6 @@ add_library(device STATIC
 
   ./system/components/osa/fsl_os_abstraction_free_rtos.c
   ./system/components/lists/generic_list.c
-
-  ./system/middleware/usb/device/usb_device_dci.c
-  ./system/middleware/usb/device/usb_device_ehci.c
-  ./system/middleware/usb/device/usb_device_khci.c
 )
 
 target_include_directories(device PUBLIC
@@ -87,8 +83,6 @@ target_include_directories(device PUBLIC
   ./system/fsl/include
   ./system/components/lists
   ./system/components/osa
-  ./system/middleware/usb/include
-  ./system/middleware/usb/device
 
 #  ./system/fsl/utils/debug_console
 #  ./system/fsl/utils/str

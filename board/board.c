@@ -149,11 +149,11 @@ void BOARD_ConfigMPU(void)
     }
 
     /* Enable MPU */
-    ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk);
+//    ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk);
 
     /* Enable I cache and D cache */
-    SCB_EnableDCache();
-    SCB_EnableICache();
+//    SCB_EnableDCache();
+//    SCB_EnableICache();
 }
 
 
