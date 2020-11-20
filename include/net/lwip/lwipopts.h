@@ -45,7 +45,7 @@
 //#define LINK_STATS                      0
 //#define LWIP_STATS_DISPLAY              0
 
-#define LWIP_DEBUG                      LWIP_DBG_ON
+#define LWIP_DEBUG                      LWIP_DBG_OFF
 #define SNTP_DEBUG                      LWIP_DBG_OFF
 #define SLIP_DEBUG                      LWIP_DBG_OFF
 #define PPP_DEBUG                       LWIP_DBG_OFF
@@ -73,7 +73,7 @@
 #define TCP_QLEN_DEBUG                  LWIP_DBG_OFF
 #define TCP_RST_DEBUG                   LWIP_DBG_OFF
 #define DHCP_DEBUG                      LWIP_DBG_OFF
-#define EMAC_DEBUG                      LWIP_DBG_ON
+#define EMAC_DEBUG                      LWIP_DBG_OFF
 
 #define DEFAULT_THREAD_PRIO             (tskIDLE_PRIORITY + 1)
 #define DEFAULT_THREAD_STACKSIZE        (512)
