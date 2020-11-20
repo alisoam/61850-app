@@ -14,13 +14,6 @@ void HardFault_Handler() {
   }
 }
 
-void BoardInit() {
-  BOARD_ConfigMPU();
-  BOARD_InitPins();
-  BOARD_BootClockRUN();
-  BOARD_InitBootPeripherals();
-}
-
 void Reset_Handler() {
   asm ("cpsid i");
 
@@ -82,8 +75,6 @@ void Reset_Handler() {
     *startPointer = 0;
     startPointer++;
   }
-
-  BoardInit();
 
   extern unsigned int __text_load_start__,
                       __text_start__,

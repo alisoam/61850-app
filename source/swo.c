@@ -33,7 +33,7 @@ static void swoInit() {
   TPI->FFCR = 0x00000100; /* Formatter and Flush Control Register */
 }
 
-__attribute__((constructor(101))) static void init() {
+__attribute__((constructor)) static void init() {
   CLOCK_EnableClock(kCLOCK_Trace);
   swoInit();
 }

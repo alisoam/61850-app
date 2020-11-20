@@ -173,6 +173,7 @@ SECTIONS
   {
     . = ALIGN(4);
     *(.bss_ncache)
+    *(.enet_test .enet_test*)
     *(NonCacheable)
     . = ALIGN(4);
     __noncachedata_end__ = .;

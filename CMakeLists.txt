@@ -6,6 +6,7 @@ set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 project (com)
 
 add_compile_definitions(XIP_EXTERNAL_FLASH=1)
+add_compile_definitions(SKIP_SYSCLK_INIT=1)
 
 set(CMAKE_CXX_COMPILER /home/ali/.local/bin/arm-none-eabi-g++)
 set(CMAKE_C_COMPILER /home/ali/.local/bin/arm-none-eabi-gcc)
@@ -104,7 +105,6 @@ set (CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_LINKER> ${CMAKE_EXE_LINKER_FLAGS} -T ${CM
 
 include_directories(
   ./include
-  ./include/usb
   ./include/net/lwip
   ./include/net/emac
   ./include/net
@@ -158,7 +158,7 @@ add_executable(com.elf
 #  ./source/example1/static_model.c
 
   ./source/enet.c
-  #  ./source/temp.c
+  ./source/temp.c
   ./source/heartbeat.c
   ./source/swo.c
   ./source/main.c
