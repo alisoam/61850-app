@@ -118,7 +118,7 @@ include_directories(
 include(device.cmake)
 include(FreeRTOS.cmake)
 include(lwIP.cmake)
-#include(lib_iec61850.cmake)
+include(lib_iec61850.cmake)
 
 add_executable(com.elf
   ./board/clock_config.c
@@ -150,12 +150,12 @@ add_executable(com.elf
   #  ./source/libiec61850/hal/lib_memory.c
   #  ./source/libiec61850/hal/socket.c
   #  ./source/libiec61850/hal/thread.c
-#  ./source/libiec61850/hal/ethernet.c
-#  ./source/libiec61850/hal/tls.c
-#  ./source/libiec61850/hal/file_provider.c
+  #  ./source/libiec61850/hal/ethernet.c
+  #  ./source/libiec61850/hal/tls.c
+  #  ./source/libiec61850/hal/file_provider.c
 
-#  ./source/example1/server.c
-#  ./source/example1/static_model.c
+  #  ./source/example1/server.c
+  #  ./source/example1/static_model.c
 
   ./source/enet.c
   ./source/temp.c
@@ -168,8 +168,8 @@ target_link_libraries(com.elf
   device
   FreeRTOS
   lwIP
-  #  iec61850_client
-  #  iec61850_server
+  iec61850_client
+  iec61850_server
 )
 
 target_include_directories(com.elf PUBLIC

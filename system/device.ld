@@ -9,8 +9,7 @@ MEMORY
   m_itcm_vectors        (RX)  : ORIGIN = 0x00000000, LENGTH = 0x00000400
   m_itcm                (RX)  : ORIGIN = 0x00000400, LENGTH = 0x0003FC00
   m_dtcm                (RW)  : ORIGIN = 0x20000000, LENGTH = 0x00040000
-  m_ocram               (RW)  : ORIGIN = 0x20200000, LENGTH = 0x00040000
-  m_ocram_ncache        (RW)  : ORIGIN = 0x20240000, LENGTH = 0x00040000
+  m_ocram               (RW)  : ORIGIN = 0x20200000, LENGTH = 0x00080000
 
   m_flash_vectors       (RX)  : ORIGIN = 0x60100000, LENGTH = 0x00000400
   m_flash               (RX)  : ORIGIN = 0x60100400, LENGTH = 0x006FFC00
@@ -22,8 +21,8 @@ MEMORY
 
 SECTIONS
 {
-  __NCACHE_REGION_START = ORIGIN(m_ocram_ncache);
-  __NCACHE_REGION_SIZE  = 0;
+  __NCACHE_REGION_START = __noncachedata_start__;
+  __NCACHE_REGION_SIZE  = __noncachedata_end__ - __noncachedata_start__;
 
   __Vectors = LOADADDR(.vectors);
   __vectors_load_start__ = LOADADDR(.vectors);
@@ -67,6 +66,8 @@ SECTIONS
     *syscall*(.text*)
     *handlers*(.text*)
     */modules/FreeRTOS*(.text*)
+    */source/net*(.text*)
+    *(.text*IRQHandler*)
 
     *(.glue_7)
     *(.glue_7t)
@@ -167,17 +168,17 @@ SECTIONS
     *(NonCacheable.init)
     . = ALIGN(4);
     __noncachedata_init_end__ = .;
-  } > m_ocram_ncache
+  } > m_ocram
   . = __noncachedata_init_end__;
   .bss_ncache (NOLOAD):
   {
     . = ALIGN(4);
     *(.bss_ncache)
-    *(.enet_test .enet_test*)
+    *(.enet_bss .enet_bss*)
     *(NonCacheable)
     . = ALIGN(4);
     __noncachedata_end__ = .;
-  } > m_ocram_ncache
+  } > m_ocram
 
   __data_dtcm_load_start__ = LOADADDR(.data_dtcm);
   .data_dtcm :
@@ -195,6 +196,8 @@ SECTIONS
     liblwIP.a(.data* .rodata*)
     *syscalls.*(.data* .rodata*)
     */modules/FreeRTOS*(.data* .rodata*)
+    */source/net*(.data* .rodata*)
+    *(.data*IRQHandler* .rodata*IRQHandler*)
     KEEP(*(.jcr*))
 
     *(.data_dtcm .data_dtcm*)
@@ -218,6 +221,8 @@ SECTIONS
     liblwIP.a(.bss*)
     *syscalls.*(.bss*)
     */modules/FreeRTOS*(.bss*)
+    */source/net*(.bss*)
+    *(.bss*_IRQHandler*)
     *(COMMON)
 
     *(.bss_dtcm .bss_dtcm.*)

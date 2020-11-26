@@ -7,9 +7,15 @@
 #include "emac/emac.h"
 #include "netif/ethernet.h"
 
-emac_data_t emac __attribute__((section (".bss_itcm"))) __attribute__((aligned(64)));
+emac_data_t emac;
 
-char lwip_heap[MEM_SIZE] __attribute__((section (".bss_ncache"))) __attribute__((aligned(64)));
+enet_rx_bd_struct_t rx_desc[PORT_COUNT][RX_DESC_COUNT] __attribute__((aligned(8))) __attribute__((section (".enet_bss")));
+enet_tx_bd_struct_t tx_desc[PORT_COUNT][TX_DESC_COUNT] __attribute__((aligned(8))) __attribute__((section (".enet_bss"))) ;
+uint8_t tx_tail_buffer[PORT_COUNT][TX_PKT_COUNT][TX_TAIL_BUFFER_SIZE] __attribute__((aligned(8))) __attribute__((section (".enet_bss")));
+uint8_t tx_head_buffer[PORT_COUNT][TX_PKT_COUNT][TX_HEAD_BUFFER_SIZE] __attribute__((aligned(8))) __attribute__((section (".enet_bss")));
+
+
+char lwip_heap[MEM_SIZE] __attribute__((section (".enet_bss"))) __attribute__((aligned(64)));
 
 int cntr_adv = 0;
 
@@ -88,6 +94,12 @@ err_t interface_init(struct netif *netif)
   netif->state = &emac;
   emac.port[0].enet = ENET;
   emac.port[1].enet = ENET2;
+  for (unsigned int i = 0; i < PORT_COUNT; i++) {
+    emac.port[i].rx_desc = rx_desc[i];
+    emac.port[i].tx_desc = tx_desc[i];
+    emac.port[i].tx_tail_buffer = tx_tail_buffer[i];
+    emac.port[i].tx_head_buffer = tx_head_buffer[i];
+  }
   err = emac_init(&emac, netif->hwaddr, link_input, netif);
   if (err != ERR_OK) {
     return err;

@@ -77,14 +77,14 @@ typedef void (*recv_callback_t)(void* arg, const uint8_t* src_addr, const uint8_
 typedef struct {
   ENET_Type* enet;
 
-  enet_rx_bd_struct_t rx_desc[RX_DESC_COUNT] __attribute__((aligned(8)));
-  enet_tx_bd_struct_t tx_desc[TX_DESC_COUNT] __attribute__((aligned(8)));
+  enet_rx_bd_struct_t* rx_desc;
+  enet_tx_bd_struct_t* tx_desc;
 
   struct pbuf* rx_pbuf[RX_DESC_COUNT];
   struct pbuf* tx_pbuf[TX_DESC_COUNT];
-  
-  uint8_t tx_tail_buffer[TX_PKT_COUNT][TX_TAIL_BUFFER_SIZE] __attribute__((aligned(8)));
-  uint8_t tx_head_buffer[TX_PKT_COUNT][TX_HEAD_BUFFER_SIZE] __attribute__((aligned(8)));
+
+  uint8_t** tx_tail_buffer;
+  uint8_t** tx_head_buffer;
 
   uint32_t rx_next_desc;
   volatile u32_t rx_free_descs;
