@@ -62,14 +62,14 @@ instance:
       - panicAlarmTemp: '90'
     - startMeasure: 'true'
     - interruptsCfg:
-      - isInterruptEnabledLowHigh: 'true'
+      - isInterruptEnabledLowHigh: 'false'
       - interruptLowHigh:
         - IRQn: 'TEMP_LOW_HIGH_IRQn'
         - enable_interrrupt: 'enabled'
         - enable_priority: 'true'
         - priority: '0'
         - enable_custom_name: 'false'
-      - isInterruptEnabledPanic: 'true'
+      - isInterruptEnabledPanic: 'false'
       - interruptPanic:
         - IRQn: 'TEMP_PANIC_IRQn'
         - enable_interrrupt: 'enabled'
@@ -88,14 +88,6 @@ const tempmon_config_t TEMPMON_config = {
 static void TEMPMON_init(void) {
   /* TEMPMON initialization */
   TEMPMON_Init(TEMPMON_PERIPHERAL, &TEMPMON_config);
-  /* Interrupt vector TEMP_LOW_HIGH_IRQn priority settings in the NVIC */
-  NVIC_SetPriority(TEMP_LOW_HIGH_IRQn, TEMPMON_LOW_HIGH_IRQ_PRIORITY);
-  /* Interrupt vector TEMP_PANIC_IRQn priority settings in the NVIC */
-  NVIC_SetPriority(TEMP_PANIC_IRQn, TEMPMON_PANIC_IRQ_PRIORITY);
-  /* Enable interrupt TEMP_LOW_HIGH_IRQn request in the NVIC */
-  EnableIRQ(TEMP_LOW_HIGH_IRQn);
-  /* Enable interrupt TEMP_PANIC_IRQn request in the NVIC */
-  EnableIRQ(TEMP_PANIC_IRQn);
   /* Start measure */
   TEMPMON_StartMeasure(TEMPMON_PERIPHERAL);
 }

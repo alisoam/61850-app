@@ -3,7 +3,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-__attribute__((constructor(101))) void init() {
+__attribute__((constructor(101))) static void init() {
   BOARD_ConfigMPU();
   BOARD_InitPins();
   BOARD_BootClockRUN();

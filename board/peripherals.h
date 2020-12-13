@@ -23,18 +23,6 @@ extern "C" {
 /* Definitions for BOARD_InitPeripherals functional group */
 /* Definition of peripheral ID */
 #define TEMPMON_PERIPHERAL TEMPMON
-/* TEMPMON interrupt vector ID (number). */
-#define TEMPMON_LOW_HIGH_IRQN TEMP_LOW_HIGH_IRQn
-/* TEMPMON interrupt vector priority. */
-#define TEMPMON_LOW_HIGH_IRQ_PRIORITY 0
-/* TEMPMON interrupt handler identifier. */
-#define TEMPMON_LOW_HIGH_IRQHANDLER TEMP_LOW_HIGH_IRQHandler
-/* TEMPMON interrupt vector ID (number). */
-#define TEMPMON_PANIC_IRQN TEMP_PANIC_IRQn
-/* TEMPMON interrupt vector priority. */
-#define TEMPMON_PANIC_IRQ_PRIORITY 1
-/* TEMPMON interrupt handler identifier. */
-#define TEMPMON_PANIC_IRQHANDLER TEMP_PANIC_IRQHandler
 /* Definition of peripheral ID */
 #define TRNG_PERIPHERAL TRNG
 

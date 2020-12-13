@@ -451,26 +451,6 @@
                   </dependency>
                </dependencies>
                <instances>
-                  <instance name="GPIO3" uuid="543a885c-9714-4a55-b0d5-e0939ddc44f8" type="igpio" type_id="igpio_b1c1fa279aa7069dca167502b8589cb7" mode="GPIO" peripheral="GPIO3" enabled="false" comment="" custom_name_enabled="false">
-                     <config_set name="fsl_gpio">
-                        <setting name="enable_irq_comb_0_15" value="false"/>
-                        <struct name="gpio_interrupt_comb_0_15">
-                           <setting name="IRQn" value="GPIO3_Combined_0_15_IRQn"/>
-                           <setting name="enable_interrrupt" value="enabled"/>
-                           <setting name="enable_priority" value="false"/>
-                           <setting name="priority" value="0"/>
-                           <setting name="enable_custom_name" value="false"/>
-                        </struct>
-                        <setting name="enable_irq_comb_16_31" value="false"/>
-                        <struct name="gpio_interrupt_comb_16_31">
-                           <setting name="IRQn" value="GPIO3_Combined_16_31_IRQn"/>
-                           <setting name="enable_interrrupt" value="enabled"/>
-                           <setting name="enable_priority" value="false"/>
-                           <setting name="priority" value="0"/>
-                           <setting name="enable_custom_name" value="false"/>
-                        </struct>
-                     </config_set>
-                  </instance>
                   <instance name="TEMPMON" uuid="f37394a6-1e19-4007-a2ed-fb8f6853e460" type="tempmon" type_id="tempmon_c966e400757748d37785414258f2801c" mode="general" peripheral="TEMPMON" enabled="true" comment="" custom_name_enabled="false">
                      <config_set name="fsl_tempmon">
                         <struct name="tempmon_config">
@@ -486,7 +466,7 @@
                         </struct>
                         <setting name="startMeasure" value="true"/>
                         <struct name="interruptsCfg">
-                           <setting name="isInterruptEnabledLowHigh" value="true"/>
+                           <setting name="isInterruptEnabledLowHigh" value="false"/>
                            <struct name="interruptLowHigh">
                               <setting name="IRQn" value="TEMP_LOW_HIGH_IRQn"/>
                               <setting name="enable_interrrupt" value="enabled"/>
@@ -494,7 +474,7 @@
                               <setting name="priority" value="0"/>
                               <setting name="enable_custom_name" value="false"/>
                            </struct>
-                           <setting name="isInterruptEnabledPanic" value="true"/>
+                           <setting name="isInterruptEnabledPanic" value="false"/>
                            <struct name="interruptPanic">
                               <setting name="IRQn" value="TEMP_PANIC_IRQn"/>
                               <setting name="enable_interrrupt" value="enabled"/>
@@ -558,30 +538,6 @@
                               </struct>
                            </struct>
                         </struct>
-                     </config_set>
-                  </instance>
-                  <instance name="USB1" uuid="22772551-174f-4be0-910f-7e0d25ae2a20" type="usb" type_id="usb_f20ee74266c7aae05b4d32d0517001b5" mode="device" peripheral="USB1" enabled="false" comment="" custom_name_enabled="false">
-                     <config_set name="deviceSetting">
-                        <setting name="vendor_id" value="0x1FC9"/>
-                        <setting name="product_id" value="0x0090"/>
-                        <setting name="manufacturer_string" value="NXP"/>
-                        <setting name="product_string" value="Product"/>
-                        <setting name="self_powered" value="false"/>
-                        <setting name="suspend_resume" value="false"/>
-                        <setting name="max_power" value="100"/>
-                        <array name="interfaces"/>
-                     </config_set>
-                  </instance>
-                  <instance name="USB2" uuid="6a2e9aa9-2a7b-4a06-b8d2-02831e3e2cad" type="usb" type_id="usb_f20ee74266c7aae05b4d32d0517001b5" mode="device" peripheral="USB2" enabled="false" comment="" custom_name_enabled="false">
-                     <config_set name="deviceSetting" quick_selection="QS_DEVICE_DEFAULT">
-                        <setting name="vendor_id" value="0x1FC9"/>
-                        <setting name="product_id" value="0x0090"/>
-                        <setting name="manufacturer_string" value="NXP"/>
-                        <setting name="product_string" value="Product"/>
-                        <setting name="self_powered" value="false"/>
-                        <setting name="suspend_resume" value="false"/>
-                        <setting name="max_power" value="100"/>
-                        <array name="interfaces"/>
                      </config_set>
                   </instance>
                </instances>
