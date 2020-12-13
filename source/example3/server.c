@@ -21,15 +21,12 @@ extern IedModel iedModel;
 static int running = 0;
 static IedServer iedServer = NULL;
 
-void
-sigint_handler(int signalId)
-{
+void sigint_handler(int signalId) {
     running = 0;
 }
 
 static ControlHandlerResult
-controlHandlerForBinaryOutput(void* parameter, MmsValue* value, bool test)
-{
+controlHandlerForBinaryOutput(void* parameter, MmsValue* value, bool test) {
     if (test)
         return CONTROL_RESULT_FAILED;
 
@@ -79,8 +76,7 @@ connectionHandler (IedServer self, ClientConnection connection, bool connected, 
         printf("Connection closed\n");
 }
 
-void iec61850Main()
-{
+void iec61850Main() {
     printf("Using libIEC61850 version %s\n", LibIEC61850_getVersionString());
 
     /* Create new server configuration object */

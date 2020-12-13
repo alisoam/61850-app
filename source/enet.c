@@ -33,10 +33,9 @@ static void setupHardwares() {
   CLOCK_EnableClock(kCLOCK_Enet);
   CLOCK_EnableClock(kCLOCK_Enet2);
 
+  GPIO_PinWrite(GPIO1, 21, 1);
   GPIO_PinWrite(GPIO2, 8, 1);
 }
-
-extern int counter;
 
 void pDelayMs(uint32_t ms) {
   vTaskDelay(ms / 5);
@@ -60,8 +59,7 @@ static void setLinkUP(ENET_Type * enet, bool full_duplex, bool T100) {
 static void setLinkDown(ENET_Type * enet) {
 }
 
-static void tcpip_init_done_signal(void *arg)
-{
+static void tcpip_init_done_signal(void *arg) {
   *(s32_t *) arg = 1;
 }
 
@@ -102,8 +100,6 @@ void enetTask(void* arg) {
     status_t status = PHY_Init(&phy_state[i], enet[i], phy_addr[i], sysClock);
     if (status != kStatus_Success) {
       printf("failed to intialize the phy %u\n", i);
-      while (true)
-        ;
     }
   }
 
@@ -112,9 +108,10 @@ void enetTask(void* arg) {
   NVIC_EnableIRQ(ENET_IRQn);
   NVIC_EnableIRQ(ENET2_IRQn);
 
+  extern void startApp();
+  startApp();
 
   while (1) {
-//    printf("counter: %d\n", counter); // FIXME
     bool busy = false;
     for (unsigned int i = 0; i < 2; i++) {
       uint32_t physts = lpcPHYStsPoll(&phy_state[i]);

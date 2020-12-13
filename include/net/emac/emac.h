@@ -54,7 +54,7 @@ extern "C"
 
 #define TX_QUEUE_SIZE                               20
 #define TX_QUEUE_COUNT                              2
-#define TX_HEAD_BUFFER_SIZE                         32
+#define TX_HEAD_BUFFER_SIZE                         64
 #define TX_TAIL_BUFFER_SIZE                         64
 #define TX_TAIL_PRP_BUFFER_START                    (MIN_PACKET_SIZE)
 #define TX_MIN_SIZE                                 MIN_PACKET_SIZE
@@ -75,6 +75,7 @@ typedef struct
 typedef void (*recv_callback_t)(void* arg, const uint8_t* src_addr, const uint8_t* dst_addr, uint16_t eth_type, struct pbuf*);
 
 typedef struct {
+  bool enable;
   ENET_Type* enet;
 
   enet_rx_bd_struct_t* rx_desc;
@@ -83,8 +84,8 @@ typedef struct {
   struct pbuf* rx_pbuf[RX_DESC_COUNT];
   struct pbuf* tx_pbuf[TX_DESC_COUNT];
 
-  uint8_t** tx_tail_buffer;
-  uint8_t** tx_head_buffer;
+  uint8_t* tx_tail_buffer;
+  uint8_t* tx_head_buffer;
 
   uint32_t rx_next_desc;
   volatile u32_t rx_free_descs;

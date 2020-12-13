@@ -11,8 +11,8 @@ emac_data_t emac;
 
 enet_rx_bd_struct_t rx_desc[PORT_COUNT][RX_DESC_COUNT] __attribute__((aligned(8))) __attribute__((section (".enet_bss")));
 enet_tx_bd_struct_t tx_desc[PORT_COUNT][TX_DESC_COUNT] __attribute__((aligned(8))) __attribute__((section (".enet_bss"))) ;
-uint8_t tx_tail_buffer[PORT_COUNT][TX_PKT_COUNT][TX_TAIL_BUFFER_SIZE] __attribute__((aligned(8))) __attribute__((section (".enet_bss")));
-uint8_t tx_head_buffer[PORT_COUNT][TX_PKT_COUNT][TX_HEAD_BUFFER_SIZE] __attribute__((aligned(8))) __attribute__((section (".enet_bss")));
+uint8_t tx_tail_buffer[PORT_COUNT][TX_PKT_COUNT * TX_TAIL_BUFFER_SIZE] __attribute__((aligned(64))) __attribute__((section (".enet_bss")));
+uint8_t tx_head_buffer[PORT_COUNT][TX_PKT_COUNT * TX_HEAD_BUFFER_SIZE] __attribute__((aligned(64))) __attribute__((section (".enet_bss")));
 
 
 char lwip_heap[MEM_SIZE] __attribute__((section (".enet_bss"))) __attribute__((aligned(64)));

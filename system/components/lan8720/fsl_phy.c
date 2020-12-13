@@ -224,50 +224,41 @@ status_t PHY_Init(struct PhyState* state, ENET_Type *base, uint32_t phy_addr, ui
   /* Only first read and write are checked for failure */
   /* Put the DP83848C in reset mode and wait for completion */
   status_t result = PHY_Write(base, phy_addr, LAN8_BCR_REG, LAN8_RESET);
-  if (result != kStatus_Success) {
+  if (result != kStatus_Success)
     return result;
-  }
 
   i = 400;
   while (i > 0) {
     pDelayMs(1);
     result = PHY_Read(base, phy_addr, LAN8_BCR_REG, &tmp);
-    if (result != kStatus_Success) {
+    if (result != kStatus_Success)
       return result;
-    }
 
-    if (!(tmp & (LAN8_RESET | LAN8_POWER_DOWN))) {
+    if (!(tmp & (LAN8_RESET | LAN8_POWER_DOWN)))
       i = -1;
-    }
-    else {
+    else
       i--;
-    }
   }
   /* Timeout? */
-  if (i == 0) {
+  if (i == 0)
     return kStatus_PHY_SMIVisitTimeout;
-  }
 
   /* Setup link */
   result = PHY_Write(base, phy_addr, LAN8_BCR_REG, LAN8_AUTONEG); //| LAN8_LOOPBACK);
-  if (result != kStatus_Success) {
+  if (result != kStatus_Success)
     return result;
-  }
 
   result = PHY_Read(base, phy_addr, LAN8_PHYID1_REG, &tmp);
-  if (result != kStatus_Success) {
+  if (result != kStatus_Success)
     return result;
-  }
-  if (tmp != LAN8_PHYID1_OUI) {
+  if (tmp != LAN8_PHYID1_OUI)
     return kStatus_Fail;
-  }
+
   result = PHY_Read(base, phy_addr, LAN8_PHYID2_REG, &tmp);
-  if (result != kStatus_Success) {
+  if (result != kStatus_Success)
     return result;
-  }
-  if (tmp != (LAN8_PHYID2_OUI | phy_addr)) {
+  if ((tmp & 0xfff0) != LAN8_PHYID2_OUI)
     return kStatus_Fail;
-  }
 
   /* The link is not set active at this point, but will be detected
      later */
@@ -317,4 +308,3 @@ uint32_t lpcPHYStsPoll(struct PhyState* state) {
 
   return state->physts;
 }
-

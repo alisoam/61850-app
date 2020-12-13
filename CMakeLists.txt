@@ -146,17 +146,18 @@ add_executable(com.elf
   ./source/net/sys_arch_freertos.c
   ./source/net/debug.c
 
-  #  ./source/libiec61850/hal/time.c
-  #  ./source/libiec61850/hal/lib_memory.c
-  #  ./source/libiec61850/hal/socket.c
-  #  ./source/libiec61850/hal/thread.c
+  ./source/libiec61850/hal/time.c
+  ./source/libiec61850/hal/lib_memory.c
+  ./source/libiec61850/hal/socket.c
+  ./source/libiec61850/hal/thread.c
   #  ./source/libiec61850/hal/ethernet.c
   #  ./source/libiec61850/hal/tls.c
   #  ./source/libiec61850/hal/file_provider.c
 
-  #  ./source/example1/server.c
-  #  ./source/example1/static_model.c
+  ./source/example3/server.c
+  ./source/example3/static_model.c
 
+  ./source/app.c
   ./source/enet.c
   ./source/temp.c
   ./source/heartbeat.c

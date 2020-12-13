@@ -10,7 +10,6 @@
  * Included files
  **********************************************************************************************************************/
 #include "fsl_common.h"
-#include "fsl_semc.h"
 #include "fsl_tempmon.h"
 #include "fsl_trng.h"
 
@@ -22,9 +21,6 @@ extern "C" {
  * Definitions
  **********************************************************************************************************************/
 /* Definitions for BOARD_InitPeripherals functional group */
-/* BOARD_InitPeripherals defines for SEMC */
-/* Definition of peripheral ID. */
-#define SEMC_PERIPHERAL SEMC
 /* Definition of peripheral ID */
 #define TEMPMON_PERIPHERAL TEMPMON
 /* TEMPMON interrupt vector ID (number). */
@@ -45,8 +41,7 @@ extern "C" {
 /***********************************************************************************************************************
  * Global variables
  **********************************************************************************************************************/
-extern semc_config_t SEMC_config;
-extern semc_sdram_config_t SEMC_sdram_struct;
+/* TEMPMON configuration */
 extern const tempmon_config_t TEMPMON_config;
 extern const trng_config_t TRNG_config;
 

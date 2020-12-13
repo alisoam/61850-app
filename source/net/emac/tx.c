@@ -107,15 +107,16 @@ static void transmit_with_priority(emac_data_t* emac, u32_t priority)
     emac->tx_sequence++;
 
     for (unsigned int port_index = 0; port_index < PORT_COUNT; port_index++) {
+      port_data_t* port = &(emac->port[port_index]);
+
+      ENET_Type* enet = port->enet;
+
+      uint32_t packet_index = port->next_tx_packet;
       uint16_t mid_trailer = (0 == port_index? 0xa000: 0xb000) | prp_size;
       mid_trailer = htons(mid_trailer);
 
-      port_data_t* port = &(emac->port[port_index]);
-      ENET_Type* enet = port->enet;
-      uint32_t packet_index = port->next_tx_packet;
-
       uint32_t idx = port->next_tx_desc;
-      uint8_t* head_buffer = (uint8_t*)(port->tx_head_buffer[packet_index]);
+      uint8_t* head_buffer = port->tx_head_buffer + packet_index * TX_HEAD_BUFFER_SIZE;
       memcpy(head_buffer, dst_addr, 6);
       memcpy(head_buffer + 12, &eth_type, 2);
       port->tx_desc[idx].buffer = head_buffer;
@@ -141,7 +142,7 @@ static void transmit_with_priority(emac_data_t* emac, u32_t priority)
         q = q->next;
       } 
 
-      uint8_t* tail_buffer = port->tx_tail_buffer[packet_index];
+      uint8_t* tail_buffer = port->tx_tail_buffer + packet_index * TX_TAIL_BUFFER_SIZE;
       memset(tail_buffer, 0, bytes_to_pad);
       *(uint16_t*)(tail_buffer + bytes_to_pad) = tx_sequence;
       *(uint16_t*)(tail_buffer + bytes_to_pad + 2) = mid_trailer;
@@ -227,7 +228,7 @@ static void txTask(void *pvParameters) {
   emac_data_t* emac = pvParameters;
 
   while (true) {
-    xQueueSelectFromSet(emac->tx_queue_set, 200 / portTICK_PERIOD_MS);
+    xQueueSelectFromSet(emac->tx_queue_set, portMAX_DELAY);//,/ 200 / portTICK_PERIOD_MS);
     check_tx_clean(emac);
     while (true) {
       for (unsigned int i = 0; i < TX_QUEUE_COUNT; i ++)

@@ -21,8 +21,8 @@ MEMORY
 
 SECTIONS
 {
-  __NCACHE_REGION_START = __noncachedata_start__;
-  __NCACHE_REGION_SIZE  = __noncachedata_end__ - __noncachedata_start__;
+  __NCACHE_REGION_START = ORIGIN(m_ocram);
+  __NCACHE_REGION_SIZE  = LENGTH(m_ocram);
 
   __Vectors = LOADADDR(.vectors);
   __vectors_load_start__ = LOADADDR(.vectors);
