@@ -3,7 +3,7 @@ SET(CMAKE_SYSTEM_NAME Generic)
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 
-project (com)
+project (app)
 
 add_compile_definitions(XIP_EXTERNAL_FLASH=1)
 add_compile_definitions(SKIP_SYSCLK_INIT=1)
@@ -120,7 +120,7 @@ include(FreeRTOS.cmake)
 include(lwIP.cmake)
 include(lib_iec61850.cmake)
 
-add_executable(com.elf
+add_executable(${PROJECT_NAME}.elf
   ./board/clock_config.c
   ./board/peripherals.c
   ./board/pin_mux.c
@@ -165,7 +165,9 @@ add_executable(com.elf
   ./source/main.c
 )
 
-target_link_libraries(com.elf
+set_property(SOURCE ./system/startup.S PROPERTY LANGUAGE C)
+
+target_link_libraries(${PROJECT_NAME}.elf
   device
   FreeRTOS
   lwIP
@@ -173,12 +175,10 @@ target_link_libraries(com.elf
   iec61850_server
 )
 
-target_include_directories(com.elf PUBLIC
+target_include_directories(${PROJECT_NAME}.elf PUBLIC
 )
 
-set_target_properties(com.elf PROPERTIES LINK_DEPENDS ${CMAKE_SOURCE_DIR}/${LINKER_SCRIPT})
-
-set_property(SOURCE ./system/startup.S PROPERTY LANGUAGE C)
+set_target_properties(${PROJECT_NAME}.elf PROPERTIES LINK_DEPENDS ${CMAKE_SOURCE_DIR}/${LINKER_SCRIPT})
 
 add_custom_command(TARGET ${PROJECT_NAME}.elf
   POST_BUILD

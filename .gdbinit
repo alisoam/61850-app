@@ -1,4 +1,4 @@
-file build/com.elf
+file build/app.elf
 target remote localhost:2331
 
 #monitor flash erase 

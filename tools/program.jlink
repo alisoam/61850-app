@@ -1,5 +1,5 @@
 r
-loadbin   build/com.bin, 0x60100000
-verifybin build/com.bin, 0x60100000
+loadbin   build/app.bin, 0x60100000
+verifybin build/app.bin, 0x60100000
 rnh
 exit
