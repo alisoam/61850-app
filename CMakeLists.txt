@@ -1,18 +1,12 @@
 cmake_minimum_required (VERSION 3.7)
+set(CMAKE_TOOLCHAIN_FILE "Toolchain.cmake")
 SET(CMAKE_SYSTEM_NAME Generic)
-
 set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 
 project (app)
 
 add_compile_definitions(XIP_EXTERNAL_FLASH=1)
 add_compile_definitions(SKIP_SYSCLK_INIT=1)
-
-set(CMAKE_CXX_COMPILER /home/ali/.local/bin/arm-none-eabi-g++)
-set(CMAKE_C_COMPILER /home/ali/.local/bin/arm-none-eabi-gcc)
-set(CMAKE_AR /home/ali/.local/bin/arm-none-eabi-ar)
-SET(CMAKE_LINKER /home/ali/.local/bin/arm-none-eabi-gcc)
-SET(CMAKE_OBJCOPY /home/ali/.local/bin/arm-none-eabi-objcopy)
 
 SET(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -DDEBUG")
 SET(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -g")
