@@ -8,7 +8,7 @@
 	shallow = true
 [submodule "modules/lwip"]
 	path = modules/lwip
-	url = https://git.savannah.nongnu.org/git/lwip.git
+	url = https://github.com/lwip-tcpip/lwip.git
 	shallow = true
 [submodule "modules/libiec61850"]
 	path = modules/libiec61850
