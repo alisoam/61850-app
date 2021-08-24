@@ -1,34 +1,43 @@
 # App
-
 ## Requirements
 - gcc for arm processors
 ``` sh
 sudo apt install gcc-arm-none-eabi
 ```
 
+- cmake
+``` sh
+sudo apt install cmake
+```
+
+- JLink
+Download from [here](https://www.segger.com/downloads/jlink/)
+
 ## For the First Time
 - create the Toolchain.cmake from Toolchain.sample.cmake
 - run the following commands:
 ```
-git submodule init
-git submodule update
-cd modules/lwip; git  apply ../patch/lwip.patch; cd ...
-cd modules/libiec61850; git apply ../patch/libiec61850.patch; cd ...
-mkdir build; cd build; cmake ..; cd ..
+make init
 ```
 
 ## Development
 ### Build
-```
-make -C build
+``` sh
+make
 ```
 
 ### Program
-```
-./tools/program.sh
+``` sh
+make program
 ```
 
-### Debug
+### Debug (GDB server)
+To start the gdb server:
+``` sh
+make gdb-srv
 ```
-./tools/debug.sh
+
+To connect to the swo output of the gdb server:
+```
+make gdb-swo
 ```
