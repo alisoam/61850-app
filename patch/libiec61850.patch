@@ -1,0 +1,35 @@
+diff --git a/src/mms/inc_private/mms_common_internal.h b/src/mms/inc_private/mms_common_internal.h
+index f5431a8..c79e04b 100644
+--- a/src/mms/inc_private/mms_common_internal.h
++++ b/src/mms/inc_private/mms_common_internal.h
+@@ -34,6 +34,8 @@
+ #define DEFAULT_MAX_SERV_OUTSTANDING_CALLED 5
+ #define DEFAULT_DATA_STRUCTURE_NESTING_LEVEL 10
+ 
++typedef struct sMmsOutstandingCall* MmsOutstandingCall;
++
+ #if (MMS_FILE_SERVICE == 1)
+ 
+ #ifndef CONFIG_MMS_MAX_NUMBER_OF_OPEN_FILES_PER_CONNECTION
+@@ -42,8 +44,6 @@
+ 
+ #include "hal_filesystem.h"
+ 
+-typedef struct sMmsOutstandingCall* MmsOutstandingCall;
+-
+ typedef struct {
+         int32_t frsmId;
+         uint32_t readPosition;
+diff --git a/src/mms/iso_mms/client/mms_client_files.c b/src/mms/iso_mms/client/mms_client_files.c
+index d9215ab..05366ef 100644
+--- a/src/mms/iso_mms/client/mms_client_files.c
++++ b/src/mms/iso_mms/client/mms_client_files.c
+@@ -709,7 +709,7 @@ mmsMsg_parseFileOpenResponse(uint8_t* buffer, int bufPos, int maxBufPos, int32_t
+ }
+ 
+ bool
+-mmsMsg_parseFileReadResponse(uint8_t* buffer, int bufPos, int maxBufPos, uint32_t invokeId, int frsmId, bool* moreFollows, MmsConnection_FileReadHandler handler, void* handlerParameter)
++mmsMsg_parseFileReadResponse(uint8_t* buffer, int bufPos, int maxBufPos, uint32_t invokeId, int32_t frsmId, bool* moreFollows, MmsConnection_FileReadHandler handler, void* handlerParameter)
+ {
+     int length;
+     uint8_t* data = NULL;

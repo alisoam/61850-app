@@ -1,0 +1,95 @@
+diff --git a/src/core/init.c b/src/core/init.c
+index 0013a899..f7c84540 100644
+--- a/src/core/init.c
++++ b/src/core/init.c
+@@ -223,9 +223,9 @@ PACK_STRUCT_END
+ #if PPP_SUPPORT && CCP_SUPPORT && !MPPE_SUPPORT
+ #error "CCP_SUPPORT needs MPPE_SUPPORT turned on"
+ #endif
+-#if !LWIP_ETHERNET && (LWIP_ARP || PPPOE_SUPPORT)
+-#error "LWIP_ETHERNET needs to be turned on for LWIP_ARP or PPPOE_SUPPORT"
+-#endif
++// #if !LWIP_ETHERNET && (LWIP_ARP || PPPOE_SUPPORT)
++// #error "LWIP_ETHERNET needs to be turned on for LWIP_ARP or PPPOE_SUPPORT"
++// #endif
+ #if LWIP_TCPIP_CORE_LOCKING_INPUT && !LWIP_TCPIP_CORE_LOCKING
+ #error "When using LWIP_TCPIP_CORE_LOCKING_INPUT, LWIP_TCPIP_CORE_LOCKING must be enabled, too"
+ #endif
+diff --git a/src/core/ipv4/etharp.c b/src/core/ipv4/etharp.c
+index 2717cf7f..50d0539a 100644
+--- a/src/core/ipv4/etharp.c
++++ b/src/core/ipv4/etharp.c
+@@ -638,7 +638,7 @@ etharp_get_entry(size_t i, ip4_addr_t **ipaddr, struct netif **netif, struct eth
+  *
+  * @see pbuf_free()
+  */
+-void
++err_t
+ etharp_input(struct pbuf *p, struct netif *netif)
+ {
+   struct etharp_hdr *hdr;
+@@ -648,7 +648,7 @@ etharp_input(struct pbuf *p, struct netif *netif)
+ 
+   LWIP_ASSERT_CORE_LOCKED();
+ 
+-  LWIP_ERROR("netif != NULL", (netif != NULL), return;);
++  LWIP_ERROR("netif != NULL", (netif != NULL), return ERR_ABRT;);
+ 
+   hdr = (struct etharp_hdr *)p->payload;
+ 
+@@ -663,7 +663,7 @@ etharp_input(struct pbuf *p, struct netif *netif)
+     ETHARP_STATS_INC(etharp.proterr);
+     ETHARP_STATS_INC(etharp.drop);
+     pbuf_free(p);
+-    return;
++    return ERR_ABRT;
+   }
+   ETHARP_STATS_INC(etharp.recv);
+ 
+@@ -740,6 +740,7 @@ etharp_input(struct pbuf *p, struct netif *netif)
+   }
+   /* free ARP packet */
+   pbuf_free(p);
++  return ERR_OK;
+ }
+ 
+ /** Just a small helper function that sends a pbuf to an ethernet address
+diff --git a/src/include/lwip/etharp.h b/src/include/lwip/etharp.h
+index 48a1d229..e386ddf5 100644
+--- a/src/include/lwip/etharp.h
++++ b/src/include/lwip/etharp.h
+@@ -98,7 +98,7 @@ err_t etharp_add_static_entry(const ip4_addr_t *ipaddr, struct eth_addr *ethaddr
+ err_t etharp_remove_static_entry(const ip4_addr_t *ipaddr);
+ #endif /* ETHARP_SUPPORT_STATIC_ENTRIES */
+ 
+-void etharp_input(struct pbuf *p, struct netif *netif);
++err_t etharp_input(struct pbuf *p, struct netif *netif);
+ 
+ #ifdef __cplusplus
+ }
+diff --git a/src/include/netif/ethernet.h b/src/include/netif/ethernet.h
+index 49649cbf..31b04e6d 100644
+--- a/src/include/netif/ethernet.h
++++ b/src/include/netif/ethernet.h
+@@ -51,7 +51,7 @@
+ extern "C" {
+ #endif
+ 
+-#if LWIP_ARP || LWIP_ETHERNET
++#if LWIP_ETHERNET
+ 
+ /** Define this to 1 and define LWIP_ARP_FILTER_NETIF_FN(pbuf, netif, type)
+  * to a filter function that returns the correct netif when using multiple
+diff --git a/src/netif/ethernet.c b/src/netif/ethernet.c
+index 545ce460..c8fa4263 100644
+--- a/src/netif/ethernet.c
++++ b/src/netif/ethernet.c
+@@ -40,7 +40,7 @@
+ 
+ #include "lwip/opt.h"
+ 
+-#if LWIP_ARP || LWIP_ETHERNET
++#if LWIP_ETHERNET
+ 
+ #include "netif/ethernet.h"
+ #include "lwip/def.h"
