@@ -5,8 +5,7 @@ all: build
 init: modules | patch
 
 modules:
-	git submodule init
-	git submodule update
+	git submodule update --init --depth 1 --recommend-shallow --single-branch
 
 patch: patch-lwip patch-libiec61850
 

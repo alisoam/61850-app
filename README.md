@@ -1,4 +1,7 @@
 # App
+Main application of the 61850 board.
+For more information and documentation see [here](https://github.com/alisoam/61850-docs).
+
 ## Requirements
 - gcc for arm processors
 ``` sh

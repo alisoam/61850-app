@@ -1,15 +1,12 @@
 [submodule "modules/FreeRTOS"]
 	path = modules/FreeRTOS
 	url = https://github.com/FreeRTOS/FreeRTOS-Kernel
-	shallow = true
 [submodule "modules/cmsis"]
 	path = modules/cmsis
 	url = https://github.com/ARM-software/CMSIS_5
-	shallow = true
 [submodule "modules/lwip"]
 	path = modules/lwip
 	url = https://github.com/lwip-tcpip/lwip.git
-	shallow = true
 [submodule "modules/libiec61850"]
 	path = modules/libiec61850
 	url = https://github.com/mz-automation/libiec61850.git
